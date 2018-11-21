@@ -34,6 +34,7 @@ var GameMain = /** @class */ (function () {
         game.PageManager.GetInstance().showEnter();
     };
     GameMain.prototype.start = function () {
+        constants.MessageId.init();
         this.initStage();
         this.loadResource();
     };

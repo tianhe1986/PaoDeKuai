@@ -18,6 +18,16 @@ module game{
 			this.cardManager = new CardManager();
 		}
 
+		public setSeatId(val:number):void
+		{
+			this.seatId = val;
+		}
+
+		public getSeatId():number
+		{
+			return this.seatId;
+		}
+
 		public setUserInfo(val:user.UserInfo):void
 		{
 			this.userInfo = val;

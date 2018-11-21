@@ -13,6 +13,12 @@ var game;
             this.cardManager = null;
             this.cardManager = new game.CardManager();
         }
+        Seat.prototype.setSeatId = function (val) {
+            this.seatId = val;
+        };
+        Seat.prototype.getSeatId = function () {
+            return this.seatId;
+        };
         Seat.prototype.setUserInfo = function (val) {
             this.userInfo = val;
         };

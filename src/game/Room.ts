@@ -5,9 +5,13 @@ module game{
 	export class Room{
 		protected isSingle:boolean = false;
 
-		protected mySeat:Seat;
-		protected leftSeat:Seat;
-		protected rightSeat:Seat;
+		protected mySeat:Seat = null;
+		protected leftSeat:Seat = null;
+		protected rightSeat:Seat = null;
+
+		protected mySeatId:number = 0;
+		protected seatMap:Object = null;
+		protected isGaming:boolean = false;
 
 		protected static instance:Room;
 
@@ -41,6 +45,16 @@ module game{
 			this.isSingle = val;
 		}
 
+		public getIsGaming():boolean
+		{
+			return this.isGaming;
+		}
+
+		public setIsGaming(val:boolean):void
+		{
+			this.isGaming = val;
+		}
+
 		public startSingle():void
 		{
 			this.setIsSingle(true);
@@ -50,7 +64,7 @@ module game{
 			this.mockSeat();
 
 			//开始游戏
-			this.startGame();
+			GameLogic.GetInstance().startGame();
 		}
 
 		public mockSeat():void
@@ -66,21 +80,60 @@ module game{
 			userManager.processOtherUserInfo(userRight);
 
 			let myUserInfo = userManager.getMyUserInfo();
-			let leftUserInfo = userManager.getUserInfo(2);
-			let rightUserInfo = userManager.getUserInfo(3);
+			//let leftUserInfo = userManager.getUserInfo(2);
+			//let rightUserInfo = userManager.getUserInfo(3);
 
 			this.mySeat.setUserInfo(myUserInfo);
-			this.leftSeat.setUserInfo(leftUserInfo);
-			this.rightSeat.setUserInfo(rightUserInfo);
+			//this.leftSeat.setUserInfo(leftUserInfo);
+			//this.rightSeat.setUserInfo(rightUserInfo);
 
 			this.mySeat.refreshSeatInfo();
-			this.leftSeat.refreshSeatInfo();
-			this.rightSeat.refreshSeatInfo();
+			//this.leftSeat.refreshSeatInfo();
+			//this.rightSeat.refreshSeatInfo();
 		}
 
-		public startGame():void
+		public getMySeatId():number
 		{
-			//转入GameLogic进行处理
+			return this.mySeatId;
+		}
+
+		public setMySeatId(val:number):void
+		{
+			this.mySeatId = val;
+		}
+
+		public startWithSeatArr(seatArr:Array<Object>):void
+		{
+			let userManager = user.UserManager.GetInstance();
+			let myUserInfo = userManager.getMyUserInfo();
+			for (let i = 0, len = seatArr.length; i < len; i++) {
+				if (seatArr[i]["userId"] == myUserInfo.getUserId()) {
+					let mySeatId = seatArr[i]["seatId"], leftSeatId = seatArr[(i + 2)%3]["seatId"], rightSeatId = seatArr[(i + 1)%3]["seatId"];
+					let leftUserInfo = userManager.getUserInfo(seatArr[(i + 2)%3]["userId"]), rightUserInfo = userManager.getUserInfo(seatArr[(i + 1)%3]["userId"]);
+
+					this.setMySeatId(mySeatId);
+					this.mySeat.setSeatId(mySeatId);
+
+					this.leftSeat.setSeatId(leftSeatId);
+					this.leftSeat.setUserInfo(leftUserInfo);
+
+					this.rightSeat.setSeatId(rightSeatId);
+					this.rightSeat.setUserInfo(rightUserInfo);
+
+					this.seatMap = {mySeatId:this.mySeat, leftSeatId:this.leftSeat, rightSeatId:this.rightSeat};
+
+					this.mySeat.refreshSeatInfo();
+					this.leftSeat.refreshSeatInfo();
+					this.rightSeat.refreshSeatInfo();
+					break;
+				}
+			}
+			this.setIsGaming(true);
+		}
+
+		public getSeat(seatId:number):Seat
+		{
+			return this.seatMap[seatId];
 		}
 	}
 }

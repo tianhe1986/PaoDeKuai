@@ -50,6 +50,7 @@ class GameMain{
 
 	public start():void
 	{
+		constants.MessageId.init();
 		this.initStage();
 		this.loadResource();
 	}
