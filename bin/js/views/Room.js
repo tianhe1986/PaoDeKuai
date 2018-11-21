@@ -13,18 +13,13 @@ var __extends = (this && this.__extends) || (function () {
 */
 var views;
 (function (views) {
-    var Enter = /** @class */ (function (_super) {
-        __extends(Enter, _super);
-        function Enter() {
-            var _this = _super.call(this) || this;
-            _this.single.on(Laya.Event.CLICK, _this, _this.enterSingle);
-            return _this;
+    var Room = /** @class */ (function (_super) {
+        __extends(Room, _super);
+        function Room() {
+            return _super.call(this) || this;
         }
-        Enter.prototype.enterSingle = function () {
-            game.Room.GetInstance().startSingle();
-        };
-        return Enter;
-    }(ui.enterUI));
-    views.Enter = Enter;
+        return Room;
+    }(ui.roomUI));
+    views.Room = Room;
 })(views || (views = {}));
-//# sourceMappingURL=Enter.js.map
+//# sourceMappingURL=Room.js.map

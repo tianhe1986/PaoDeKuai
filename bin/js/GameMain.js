@@ -1,7 +1,6 @@
 // 程序入口
 var GameMain = /** @class */ (function () {
     function GameMain() {
-        Laya.init(1344, 400);
     }
     GameMain.GetInstance = function () {
         if (null == GameMain.instance) {
@@ -25,6 +24,14 @@ var GameMain = /** @class */ (function () {
         Laya.stage.bgColor = "#000000";
     };
     GameMain.prototype.loadResource = function () {
+        var uiResArry = [
+            { url: "res/atlas/comp.atlas", type: Laya.Loader.ATLAS },
+            { url: "res/atlas/avatar.atlas", type: Laya.Loader.ATLAS }
+        ];
+        Laya.loader.load(uiResArry, Laya.Handler.create(this, this.showIndex));
+    };
+    GameMain.prototype.showIndex = function () {
+        game.PageManager.GetInstance().showEnter();
     };
     GameMain.prototype.start = function () {
         this.initStage();
