@@ -102,6 +102,11 @@ module game{
 			this.mySeatId = val;
 		}
 
+		public getMySeat():Seat
+		{
+			return this.mySeat;
+		}
+
 		public startWithSeatArr(seatArr:Array<Object>):void
 		{
 			let userManager = user.UserManager.GetInstance();
@@ -120,7 +125,10 @@ module game{
 					this.rightSeat.setSeatId(rightSeatId);
 					this.rightSeat.setUserInfo(rightUserInfo);
 
-					this.seatMap = {mySeatId:this.mySeat, leftSeatId:this.leftSeat, rightSeatId:this.rightSeat};
+					this.seatMap = {};
+					this.seatMap[mySeatId] = this.mySeat;
+					this.seatMap[leftSeatId] = this.leftSeat;
+					this.seatMap[rightSeatId] = this.rightSeat;
 
 					this.mySeat.refreshSeatInfo();
 					this.leftSeat.refreshSeatInfo();

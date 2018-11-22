@@ -64,5 +64,17 @@ module game{
 			(seatView.getChildByName("score") as Laya.Text).text = "" + this.getUserInfo().getScore();
 			(seatView.getChildByName("cardNum") as Laya.Text).text = "" + this.getCardManager().getCardNum();
 		}
+
+		public refreshCard(cardIds:Array<number>):void
+		{
+			this.cardManager.refreshCard(cardIds, this.getSeatId() == game.Room.GetInstance().getMySeatId());
+			this.refreshSeatInfo();
+		}
+
+		public refreshCardNum(cardNum:number):void
+		{
+			this.cardManager.setCardNum(cardNum);
+			this.refreshSeatInfo();
+		}
 	}
 }

@@ -44,6 +44,14 @@ var game;
             seatView.getChildByName("score").text = "" + this.getUserInfo().getScore();
             seatView.getChildByName("cardNum").text = "" + this.getCardManager().getCardNum();
         };
+        Seat.prototype.refreshCard = function (cardIds) {
+            this.cardManager.refreshCard(cardIds, this.getSeatId() == game.Room.GetInstance().getMySeatId());
+            this.refreshSeatInfo();
+        };
+        Seat.prototype.refreshCardNum = function (cardNum) {
+            this.cardManager.setCardNum(cardNum);
+            this.refreshSeatInfo();
+        };
         return Seat;
     }());
     game.Seat = Seat;

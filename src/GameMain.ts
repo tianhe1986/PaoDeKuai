@@ -38,7 +38,8 @@ class GameMain{
 	{
 		let uiResArry:Array<any> = [
 			{ url: "res/atlas/comp.atlas", type:Laya.Loader.ATLAS},
-			{ url: "res/atlas/avatar.atlas", type:Laya.Loader.ATLAS}
+			{ url: "res/atlas/avatar.atlas", type:Laya.Loader.ATLAS},
+			{ url: "res/atlas/card.atlas", type:Laya.Loader.ATLAS},
 		];
 		Laya.loader.load(uiResArry, Laya.Handler.create(this, this.showIndex));
 	}

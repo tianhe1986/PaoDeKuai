@@ -71,10 +71,12 @@ var game;
         Room.prototype.setMySeatId = function (val) {
             this.mySeatId = val;
         };
+        Room.prototype.getMySeat = function () {
+            return this.mySeat;
+        };
         Room.prototype.startWithSeatArr = function (seatArr) {
             var userManager = user.UserManager.GetInstance();
             var myUserInfo = userManager.getMyUserInfo();
-            console.log(seatArr);
             for (var i = 0, len = seatArr.length; i < len; i++) {
                 if (seatArr[i]["userId"] == myUserInfo.getUserId()) {
                     var mySeatId = seatArr[i]["seatId"], leftSeatId = seatArr[(i + 2) % 3]["seatId"], rightSeatId = seatArr[(i + 1) % 3]["seatId"];
@@ -85,8 +87,10 @@ var game;
                     this.leftSeat.setUserInfo(leftUserInfo);
                     this.rightSeat.setSeatId(rightSeatId);
                     this.rightSeat.setUserInfo(rightUserInfo);
-                    this.seatMap = { mySeatId: this.mySeat, leftSeatId: this.leftSeat, rightSeatId: this.rightSeat };
-                    console.log("hao");
+                    this.seatMap = {};
+                    this.seatMap[mySeatId] = this.mySeat;
+                    this.seatMap[leftSeatId] = this.leftSeat;
+                    this.seatMap[rightSeatId] = this.rightSeat;
                     this.mySeat.refreshSeatInfo();
                     this.leftSeat.refreshSeatInfo();
                     this.rightSeat.refreshSeatInfo();

@@ -4,6 +4,22 @@
 module game{
 	export class GameLogic{
 		protected seatUserMap:Object = {};
+
+		//座位，牌列表
+		protected seatCardMap:Object = {};
+
+		//当前出牌座位id
+		protected nowOutSeatId:number = 0;
+
+		//当前出的牌
+		protected nowCardSet:CardSet = null;
+
+		//当前最大的座位id
+		protected nowSuperSeatId:number = 0;
+
+		//当前最大的牌
+		protected nowSuperCardSet:CardSet = null;
+
 		protected static instance:GameLogic;
 
 		public static GetInstance():GameLogic
@@ -16,7 +32,7 @@ module game{
 		}
 
 		constructor(){
-
+			this.seatCardMap = {1:{}, 2:{}, 3:{}};
 		}
 
 		public startGame():void
@@ -42,22 +58,66 @@ module game{
 			
 			let msg:message.GameStart = new message.GameStart();
 			msg.seatArr = seatArr;
-			msg.writeData();
 
-			let msgObj = {"id":msg.getMessageId(), "content":msg.getContent()};
-			net.SocketManager.GetInstance().onMessageReveived(JSON.stringify(msgObj));
+			this.mockSendMessage(msg);
 		}
 
 		public mockGiveCard():void
 		{
 			//模拟洗牌，并分发出去，记录各自的牌
+			let arr:Array<number> = [];
+			for (let i = 1; i <= 51; i++) {
+				arr.push(i);
+			}
+
+			//洗牌
+			let randomIndex:number, itemAtIndex:number;
+			for (let i = 50; i >= 0; i--) {
+				randomIndex = Math.floor(Math.random()*(i+1));
+				itemAtIndex = arr[randomIndex];
+
+				arr[randomIndex] = arr[i];
+				arr[i] = itemAtIndex;
+			}
+
+			this.processSeatCard(1, arr.splice(0, 17));
+			this.processSeatCard(2, arr.splice(0, 17));
+			this.processSeatCard(3, arr.splice(0, 17));
+		}
+
+		protected processSeatCard(seatId:number, cardIds:Array<number>):void
+		{
+			for (let i = 0; i < 17; i++) {
+				this.seatUserMap[seatId][cardIds[i]] = true;
+				if (cardIds[i] == 1) { 	//计算第一个出牌者
+					this.nowOutSeatId = seatId;
+				}
+			}
+
 			//对于玩家，发送牌消息
-			//对于电脑，计算牌型
+			if (seatId == Room.GetInstance().getMySeatId()) {
+				let msg:message.GiveCard = new message.GiveCard();
+				msg.seatId = seatId;
+				msg.cardNum = cardIds.length;
+				msg.cardIds = cardIds;
+
+				this.mockSendMessage(msg);
+			} else { //对于电脑，计算牌型
+				Room.GetInstance().getSeat(seatId).refreshCard(cardIds);
+			}
+			
+		}
+
+		public mockSendMessage(msg:message.Base):void
+		{
+			msg.writeData();
+			let msgObj = {"id":msg.getMessageId(), "content":msg.getContent()};
+			net.SocketManager.GetInstance().onMessageReveived(JSON.stringify(msgObj));
 		}
 
 		public mockOutTurn():void
 		{
-			//给红桃3的人发送出牌消息
+			//下个发牌者发送出牌消息
 			//如果不是玩家，则调用电脑出牌机制
 		}
 

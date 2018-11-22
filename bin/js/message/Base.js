@@ -5,6 +5,8 @@ var message;
 (function (message) {
     var Base = /** @class */ (function () {
         function Base() {
+            this.id = 0;
+            this.content = {};
         }
         Base.prototype.setContent = function (val) {
             this.content = val;
