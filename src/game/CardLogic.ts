@@ -65,5 +65,42 @@ module game{
 
 			return result;
 		}
+
+		//三张
+		public findAllThree(cardList:Array<Card>):Array<Array<Card>>
+		{
+			let result = [];
+			let i = 0;
+			while (i <= cardList.length - 3) {
+				if (cardList[i].getPoint() == cardList[i+2].getPoint()) {
+					result.push(cardList.splice(i, 3));
+				} else {
+					i++;
+				}
+			}
+
+			return result;
+		}
+
+		//找姊妹对
+		public findAllConnectTwo(cardList:Array<Card>):Array<Array<Card>>
+		{
+			let result = [];
+			let i = 0;
+			while (i <= cardList.length - 4) {
+				if (cardList[i].getPoint() == cardList[i+3].getPoint() - 1) { //找到第一个姊妹对
+					//继续找后面连在一起的
+					let endIndex = i + 3;
+					while (endIndex + 2 < cardList.length && cardList[endIndex].getPoint() == cardList[endIndex+2].getPoint() - 1) {
+						endIndex += 2;
+					}
+					result.push(cardList.splice(i, endIndex + 1 - i));
+				} else {
+					i++;
+				}
+			}
+
+			return result;
+		}
 	}
 }
