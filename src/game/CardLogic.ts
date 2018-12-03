@@ -184,5 +184,21 @@ module game{
 
 			return result;
 		}
+
+		//两张
+		public findAllTwo(cardList:Array<Card>):Array<Array<Card>>
+		{
+			let result = [];
+			let i = 0;
+			while (i <= cardList.length - 2) {
+				if (cardList[i].getPoint() == cardList[i+1].getPoint()) {
+					result.push(cardList.splice(i, 2));
+				} else {
+					i++;
+				}
+			}
+
+			return result;
+		}
 	}
 }
