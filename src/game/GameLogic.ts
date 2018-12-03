@@ -87,7 +87,7 @@ module game{
 
 		protected processSeatCard(seatId:number, cardIds:Array<number>):void
 		{
-			for (let i = 0; i < 17; i++) {
+			for (let i = 0, len = cardIds.length; i < len; i++) {
 				this.seatUserMap[seatId][cardIds[i]] = true;
 				if (cardIds[i] == 1) { 	//计算第一个出牌者
 					this.nowOutSeatId = seatId;
@@ -104,6 +104,12 @@ module game{
 				this.mockSendMessage(msg);
 			} else { //对于电脑，计算牌型
 				Room.GetInstance().getSeat(seatId).refreshCard(cardIds);
+				let msg:message.GiveCard = new message.GiveCard();
+				msg.seatId = seatId;
+				msg.cardNum = cardIds.length;
+				msg.cardIds = [];
+
+				this.mockSendMessage(msg);
 			}
 			
 		}
@@ -125,6 +131,26 @@ module game{
 		public mockHandleOut(msg):void
 		{
 
+		}
+
+		public calcuOutStatus():void
+		{
+			if (this.isTurn()) {
+				let cardLogic = CardLogic.GetInstance()
+				let cardSet = CardLogic.GetInstance().calcuCardSet(Room.GetInstance().getMySeat().getSelectCardList());
+				if (cardLogic.canOut(cardSet, this.nowSuperCardSet)) { //可以出牌
+
+				} else { //不允许出牌
+
+				}
+			} else { //没到，不允许出牌
+
+			}
+		}
+
+		public isTurn():boolean
+		{
+			return this.nowOutSeatId == Room.GetInstance().getMySeatId();
 		}
 	}
 }
