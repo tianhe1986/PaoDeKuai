@@ -35,6 +35,9 @@ module game{
 
 		public refreshCard(cardIds:Array<number>, isSelf:boolean = false):void
 		{
+			for (let i = 0, len = this.cardList.length; i < len; i++) {
+				this.cardList[i].recover();
+			}
 			this.cardList = [];
 			this.cardSetList = [];
 
@@ -66,6 +69,8 @@ module game{
 			//简单粗暴的清除重绘，之后再优化
 			handCardView.removeChildren();
 			for (let i = 0, len = this.cardList.length; i < len; i++) {
+				this.cardList[i].recover();
+				this.cardList[i].bindClick();
 				let cardView = this.cardList[i].getCardView();
 				handCardView.addChild(cardView);
 				cardView.y = 0;
@@ -73,9 +78,179 @@ module game{
 			}
 		}
 
+		public clearCardSet():void
+		{
+			this.cardSetList = [];
+		}
+
 		public calcuCardSet():void
 		{
+			this.clearCardSet();
+			let cardLogic = CardLogic.GetInstance();
+			let tempCardList = this.cardList.slice();
+			//按从小到大排序
+			tempCardList.sort((a:Card, b:Card) => {
+				return a.getCardId() - b.getCardId();
+			});
+			//炸弹
+			let bombList = cardLogic.findAllBomb(tempCardList);
+			//连续三张
+			let connectThreeList = cardLogic.findAllConnectThree(tempCardList);
+			//三张
+			let threeList = cardLogic.findAllThree(tempCardList);
+			//姊妹对
+			let connectTwoList = cardLogic.findAllConnectTwo(tempCardList);
+			//顺子
+			let straightList = cardLogic.findAllStraight(tempCardList);
+			//单对
+			let twoList = cardLogic.findAllTwo(tempCardList);
+			//剩下的都是单张
+			let singleList = new Array<Array<Card>>();
+			for (let i = 0; i < tempCardList.length; i++) {
+				singleList.push([tempCardList[i]]);
+			}
+			//炸弹直接加入
+			this.directInsert(bombList, constants.CardType.BOMB);
+			//三张，优先配两个单张，再配单对，配不了了则拆
+			let i:number = 0;
+			while (i < connectThreeList.length) {
+				if (twoList.length * 2 + singleList.length >= 2 * connectThreeList[i].length / 3) { //两张 + 单对数量够了,组合在一起
+					let insertList = connectThreeList[i].slice();
+					let needLen:number = connectThreeList[i].length / 3 * 5;
+					let point:number = connectThreeList[i][0].getPoint();
+					let minPoint:number = point;
+					while (insertList.length < needLen && singleList.length >= 2) {
+						let tempCalcuList = singleList.splice(0, 2);
+						insertList.push(tempCalcuList[0][0]);
+						insertList.push(tempCalcuList[1][0]);
+						if (tempCalcuList[0][0].getPoint() < minPoint) {
+							minPoint = tempCalcuList[0][0].getPoint();
+						}
+					}
+					while (insertList.length < needLen && twoList.length) {
+						let tempCalcuList = twoList.splice(0, 1);
+						insertList.push(tempCalcuList[0][0]);
+						insertList.push(tempCalcuList[0][1]);
+						if (tempCalcuList[0][0].getPoint() < minPoint) {
+							minPoint = tempCalcuList[0][0].getPoint();
+						}
+					}
 
+					let newCardSet = new CardSet();
+					newCardSet.setCardType(constants.CardType.CONNECT_THREE);
+					newCardSet.setCardList(insertList);
+					newCardSet.setPoint(point);
+					newCardSet.setConnectNum(needLen/5);
+					newCardSet.setMinPoint(minPoint);
+					this.cardSetList.push(newCardSet);
+					i++;
+				} else { //不够,直接拆了,TODO: 优化,考虑拆顺子,连对,和其他三张,第一版电脑当然是蠢的
+					let handleList = connectThreeList[i].slice();
+					connectThreeList.splice(i, 1);
+					while (handleList.length) {
+						twoList.push(handleList.splice(0, 2));
+						singleList.push(handleList.splice(0, 1));
+					}
+				}
+			}
+
+			i = 0;
+			while (i < threeList.length) {
+				if (twoList.length * 2 + singleList.length >= 2) { //两张 + 单对数量够了,组合在一起
+					let insertList = threeList[i].slice();
+					let needLen:number = 5;
+					let point:number = threeList[i][0].getPoint();
+					let minPoint:number = point;
+					while (insertList.length < needLen && singleList.length >= 2) {
+						let tempCalcuList = singleList.splice(0, 2);
+						insertList.push(tempCalcuList[0][0]);
+						insertList.push(tempCalcuList[1][0]);
+						if (tempCalcuList[0][0].getPoint() < minPoint) {
+							minPoint = tempCalcuList[0][0].getPoint();
+						}
+					}
+					while (insertList.length < needLen && twoList.length) {
+						let tempCalcuList = twoList.splice(0, 1);
+						insertList.push(tempCalcuList[0][0]);
+						insertList.push(tempCalcuList[0][1]);
+						if (tempCalcuList[0][0].getPoint() < minPoint) {
+							minPoint = tempCalcuList[0][0].getPoint();
+						}
+					}
+
+					let newCardSet = new CardSet();
+					newCardSet.setCardType(constants.CardType.THREE_TWO);
+					newCardSet.setCardList(insertList);
+					newCardSet.setPoint(point);
+					newCardSet.setMinPoint(minPoint);
+					this.cardSetList.push(newCardSet);
+					i++;
+				} else { //不够,直接拆了,TODO: 优化,考虑拆顺子,连对
+					let handleList = connectThreeList[i].slice();
+					connectThreeList.splice(i, 1);
+					while (handleList.length) {
+						twoList.push(handleList.splice(0, 2));
+						singleList.push(handleList.splice(0, 1));
+					}
+				}
+			}
+
+			//其他的没啥好说的,直接往里塞
+			this.directInsert(connectTwoList, constants.CardType.CONNECT_DOUBLE);
+			this.directInsert(straightList, constants.CardType.STRAIGHT);
+			this.directInsert(twoList, constants.CardType.DOUBLE);
+			this.directInsert(singleList, constants.CardType.SINGLE);
+
+			/*this.printCardList(bombList, "bomb");
+			this.printCardList(connectThreeList, "connectThree");
+			this.printCardList(threeList, "three");
+			this.printCardList(connectTwoList, "connectTwo");
+			this.printCardList(straightList, "straight");
+			this.printCardList(twoList, "twoList");
+			this.printCardList(singleList, "single");*/
+		}
+
+		protected directInsert(handleList:Array<Array<Card>>, cardType:number):void
+		{
+			for (let i = 0, len = handleList.length; i < len; i++) {
+				let newCardSet = new CardSet();
+				newCardSet.setCardType(cardType);
+				newCardSet.setCardList(handleList[i]);
+				newCardSet.setPoint(handleList[i][0].getPoint());
+				newCardSet.setMinPoint(handleList[i][0].getPoint());
+				if (cardType == constants.CardType.CONNECT_DOUBLE) {
+					newCardSet.setConnectNum(handleList[i].length /2);
+				} else if (cardType == constants.CardType.STRAIGHT) {
+					newCardSet.setConnectNum(handleList[i].length);
+				} 
+				this.cardSetList.push(newCardSet);
+			}
+		}
+
+		protected printCardList(cardBaseList:Array<Array<Card>>, cardType:string = ""):void
+		{
+			console.log("--------------------------user card begin " + cardType +"----------------------------");
+			for (let i = 0, len = cardBaseList.length; i < len; i++) {
+				let pointList:Array<number> = [];
+				let idList:Array<number> = [];
+				for (let j = 0, cardLen = cardBaseList[i].length; j < cardLen; j++) {
+					idList.push(cardBaseList[i][j].getCardId());
+					pointList.push(cardBaseList[i][j].getPoint());
+				}
+				console.log("id " + JSON.stringify(idList));
+				console.log("point " + JSON.stringify(pointList));
+			}
+			console.log("--------------------------user card end " + cardType +"----------------------------");
+		}
+
+		public getSelectCardList():Array<Card>
+		{
+			let result:Array<Card> = [];
+			for (let i = 0, len = this.cardList.length; i < len; i++) {
+				result.push(this.cardList[i]);
+			}
+
+			return result;
 		}
 	}
 }
