@@ -102,5 +102,87 @@ module game{
 
 			return result;
 		}
+
+		//找顺子
+		public findAllStraight(cardList:Array<Card>):Array<Array<Card>>
+		{
+			let result = [];
+			let i = 0;
+			let j;
+			let count:number = 0;
+			let needPoint:number,tempPoint:number;
+			let tempList:Array<Card>;
+			let removeList:Array<Card> = [];
+			while (i <= cardList.length - 5) {
+				tempList = [];
+				needPoint = cardList[i].getPoint() + 1;
+				tempList.push(cardList[i]);
+				if (needPoint >= 12) { //J开头,没啥搞头了
+					break;
+				}
+				count = 1;
+				j = i + 1;
+				while (j < cardList.length) {
+					tempPoint = cardList[j].getPoint();
+					if (tempPoint < needPoint) { //还没到,继续
+						j++;
+					} else if (tempPoint == needPoint) { //就是当前要的
+						tempList.push(cardList[j])
+						count++;
+						if (count == 5) {
+							result.push(tempList.slice());
+							removeList = removeList.concat(tempList);
+							i = j + 1;
+							break;
+						}
+						needPoint++;
+						j++;
+					} else { //超了, 从j开始重新找
+						i = j;
+						break;
+					}
+				}
+				if (j == cardList.length) {
+					break;
+				}
+			}
+
+			//移除处理
+			i = 0;
+			j = 0;
+			while (i < cardList.length && j < removeList.length) {
+				let leftId = cardList[i].getCardId();
+				let rightId = removeList[j].getCardId();
+				if (leftId < rightId) {
+					i++;
+				} else if (leftId > rightId) {
+					j++;
+				} else {
+					cardList.splice(i, 1);
+					j++;
+				}
+			}
+
+			//把剩下可加的加进去
+			i = 0;
+			j = 0;
+			while (i < cardList.length && j < result.length) {
+				let nowNeedPoint = result[j][result[j].length - 1].getPoint() + 1;
+				if (nowNeedPoint >= 15) {
+					break;
+				}
+				let nowPoint = cardList[i].getPoint();
+				if (nowPoint < nowNeedPoint) {
+					i++;
+				} else if (nowPoint == nowNeedPoint) {
+					result[j].push(cardList[i]);
+					cardList.splice(i, 1);
+				} else {
+					j++;
+				}
+			}
+
+			return result;
+		}
 	}
 }
