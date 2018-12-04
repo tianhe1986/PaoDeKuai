@@ -12,10 +12,40 @@ module game{
 		//卡牌点数
 		protected point:number = 0;
 
+		//是否选中
+		protected isSelect:boolean = false;
+
 		constructor(){
 			this.cardImage = new Laya.Image();
 			this.cardImage.width = 105;
 			this.cardImage.height = 150;
+		}
+
+		public recover():void
+		{
+			this.cardImage.off(Laya.Event.CLICK, this, this.switchStatus);
+		}
+
+		public bindClick():void
+		{
+			this.cardImage.on(Laya.Event.CLICK, this, this.switchStatus);
+		}
+
+		public switchStatus():void
+		{
+			if (this.isSelect) {
+				this.isSelect = false;
+				this.cardImage.y = 0;
+			} else {
+				this.isSelect = true;
+				this.cardImage.y = -75;
+			}
+			GameLogic.GetInstance().calcuOutStatus();
+		}
+
+		public getIsSelect():boolean
+		{
+			return this.isSelect;
 		}
 
 		public getCardView():Laya.Image

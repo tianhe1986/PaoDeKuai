@@ -201,6 +201,7 @@ module game{
 			this.directInsert(twoList, constants.CardType.DOUBLE);
 			this.directInsert(singleList, constants.CardType.SINGLE);
 
+			this.printCardSetList();
 			/*this.printCardList(bombList, "bomb");
 			this.printCardList(connectThreeList, "connectThree");
 			this.printCardList(threeList, "three");
@@ -208,6 +209,34 @@ module game{
 			this.printCardList(straightList, "straight");
 			this.printCardList(twoList, "twoList");
 			this.printCardList(singleList, "single");*/
+		}
+
+		protected printCardSetList():void
+		{
+			for (let i = 0, len = this.cardSetList.length; i < len; i++) {
+				this.printCardSet(this.cardSetList[i]);
+			}
+		}
+
+		protected printCardSet(cardSet:CardSet):void
+		{
+			
+			let cardType = cardSet.getCardType();
+			let cardTypeStr:string = constants.CardType.getTypeName(cardType);
+			console.log("--------------------------user card begin " + cardTypeStr +"----------------------------");
+			//console.log("connect num " + cardSet.getConnectNum());
+			console.log("point " + cardSet.getPoint());
+			console.log("min point " + cardSet.getMinPoint());
+			let idList:Array<number> = [];
+			let pointList:Array<number> = [];
+			let cardList = cardSet.getCardList();
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				idList.push(cardList[i].getCardId());
+				pointList.push(cardList[i].getPoint());
+			}
+			console.log("id " + JSON.stringify(idList));
+			console.log("point " + JSON.stringify(pointList));
+			console.log("--------------------------user card end " + cardTypeStr +"----------------------------\n");
 		}
 
 		protected directInsert(handleList:Array<Array<Card>>, cardType:number):void

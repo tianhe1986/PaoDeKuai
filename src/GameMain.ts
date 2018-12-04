@@ -52,6 +52,7 @@ class GameMain{
 	public start():void
 	{
 		constants.MessageId.init();
+		constants.CardType.init();
 		this.initStage();
 		this.loadResource();
 	}

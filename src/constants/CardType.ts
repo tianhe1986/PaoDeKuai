@@ -14,5 +14,27 @@ module constants{
 		public static THREE_ONE = 6; //三带一，仅最后出牌可出
 		public static CONNECT_THREE = 7; //连续三带二
 		public static BOMB = 8; //炸弹
+
+		protected static typeNameMap:Object = {};
+
+		public static init():void
+		{
+			CardType.typeNameMap[-2] = "要不起";
+			CardType.typeNameMap[-1] = "前面没有牌";
+			CardType.typeNameMap[0] = "错误牌型";
+			CardType.typeNameMap[1] = "单张";
+			CardType.typeNameMap[2] = "一对";
+			CardType.typeNameMap[3] = "一条龙";
+			CardType.typeNameMap[4] = "姊妹对";
+			CardType.typeNameMap[5] = "三带二";
+			CardType.typeNameMap[6] = "三带一";
+			CardType.typeNameMap[7] = "连续三带二";
+			CardType.typeNameMap[8] = "炸弹";
+		}
+
+		public static getTypeName(cardType:number):string
+		{
+			return CardType.typeNameMap[cardType] != undefined ? CardType.typeNameMap[cardType] : "";
+		}
 	}
 }

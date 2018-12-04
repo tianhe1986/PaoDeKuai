@@ -82,7 +82,7 @@ module game{
 
 			this.processSeatCard(1, arr.splice(0, 17));
 			this.processSeatCard(2, arr.splice(0, 17));
-			this.processSeatCard(3, arr.splice(0, 17));
+			this.processSeatCard(3, arr);
 		}
 
 		protected processSeatCard(seatId:number, cardIds:Array<number>):void
