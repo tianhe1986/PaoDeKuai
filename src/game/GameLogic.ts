@@ -3,22 +3,14 @@
 */
 module game{
 	export class GameLogic{
-		protected seatUserMap:Object = {};
+		protected mockSeatUserMap:Object = {};
 
 		//座位，牌列表
-		protected seatCardMap:Object = {};
-
-		//当前出牌座位id
-		protected nowOutSeatId:number = 0;
-
-		//当前出的牌
-		protected nowCardSet:CardSet = null;
-
-		//当前最大的座位id
-		protected nowSuperSeatId:number = 0;
-
-		//当前最大的牌
-		protected nowSuperCardSet:CardSet = null;
+		protected mockSeatCardMap:Object = {};
+		protected mockNowOutSeatId:number = 0;
+		protected mockNowCardSet:CardSet = null;
+		protected mockNowSuperSeatId:number = 0;
+		protected mockNowSuperCardSet:CardSet = null;
 
 		protected static instance:GameLogic;
 
@@ -32,7 +24,7 @@ module game{
 		}
 
 		constructor(){
-			this.seatCardMap = {1:{}, 2:{}, 3:{}};
+			this.mockSeatCardMap = {1:{}, 2:{}, 3:{}};
 		}
 
 		public startGame():void
@@ -49,11 +41,11 @@ module game{
 		public mockStart():void
 		{
 			//发送游戏开始的消息
-			this.seatUserMap = {1:1, 2:2, 3:3};
+			this.mockSeatUserMap = {1:1, 2:2, 3:3};
 
 			let seatArr:Array<Object> = [];
-			for (let i in this.seatUserMap) {
-				seatArr.push({"seatId": i, "userId": this.seatUserMap[i]});
+			for (let i in this.mockSeatUserMap) {
+				seatArr.push({"seatId": i, "userId": this.mockSeatUserMap[i]});
 			}
 			
 			let msg:message.GameStart = new message.GameStart();
@@ -88,9 +80,14 @@ module game{
 		protected processSeatCard(seatId:number, cardIds:Array<number>):void
 		{
 			for (let i = 0, len = cardIds.length; i < len; i++) {
-				this.seatUserMap[seatId][cardIds[i]] = true;
+				this.mockSeatCardMap[seatId][cardIds[i]] = true;
 				if (cardIds[i] == 1) { 	//计算第一个出牌者
-					this.nowOutSeatId = seatId;
+					this.mockNowOutSeatId = seatId;
+					this.mockNowSuperSeatId = seatId;
+					let newCardSet = new game.CardSet();
+					newCardSet.setCardType(constants.CardType.INIT);
+					this.mockNowCardSet = newCardSet;
+					this.mockNowSuperCardSet = newCardSet;
 				}
 			}
 
@@ -124,7 +121,56 @@ module game{
 		public mockOutTurn():void
 		{
 			//下个发牌者发送出牌消息
-			//如果不是玩家，则调用电脑出牌机制
+			let msg:message.OutTurn = new message.OutTurn();
+			msg.seatId = this.mockNowOutSeatId;
+			msg.superSeatId = this.mockNowSuperSeatId;
+			msg.cardType = this.mockNowSuperCardSet.getCardType();
+			msg.connectNum = this.mockNowSuperCardSet.getConnectNum();
+			msg.point = this.mockNowSuperCardSet.getPoint();
+
+			this.mockSendMessage(msg);
+		}
+
+		public mockOut(seatId:number):void
+		{
+			if (seatId == Room.GetInstance().getMySeatId()) {
+				return;
+			}
+			let seat = Room.GetInstance().getSeat(seatId);
+			let superCardSet = Room.GetInstance().getNowSuperCardSet();
+
+			let resultCardSet = seat.calcuOutCardSet(superCardSet);
+
+			//发送出牌消息
+			this.sendOutCard(seatId, resultCardSet);
+
+			//手里没牌了，发送游戏结束
+			if (seat.getRealCardNum() == 0) {
+				return;
+			}
+
+			this.mockNowCardSet = resultCardSet;
+			this.mockNowOutSeatId++;
+			if (this.mockNowOutSeatId > 3) {
+				this.mockNowOutSeatId = 1;
+			}
+			//如果是不要
+			if (resultCardSet.getCardType() == constants.CardType.PASSED) {
+				//转回到当前最大者了，新一轮,否则，保持当前最大牌不变，下一个用户
+				if (this.mockNowSuperSeatId == this.mockNowOutSeatId) {
+					let newCardSet = new CardSet();
+					newCardSet.setCardType(constants.CardType.INIT);
+					this.mockNowSuperCardSet = newCardSet;
+				}
+			} else {
+				//更新最大者
+				this.mockNowSuperSeatId = seatId;
+				this.mockNowSuperCardSet = resultCardSet;
+			}
+
+			
+			//下一轮出牌
+			this.mockOutTurn();
 		}
 
 		//处理出牌
@@ -132,25 +178,22 @@ module game{
 		{
 
 		}
-
-		public calcuOutStatus():void
+		
+		public sendOutCard(seatId:number, resultCardSet:CardSet):void
 		{
-			if (this.isTurn()) {
-				let cardLogic = CardLogic.GetInstance()
-				let cardSet = CardLogic.GetInstance().calcuCardSet(Room.GetInstance().getMySeat().getSelectCardList());
-				if (cardLogic.canOut(cardSet, this.nowSuperCardSet)) { //可以出牌
-
-				} else { //不允许出牌
-
-				}
-			} else { //没到，不允许出牌
-
+			let msg:message.CardOut = new message.CardOut();
+			msg.seatId = seatId;
+			msg.cardType = resultCardSet.getCardType();
+			msg.connectNum = resultCardSet.getConnectNum();
+			msg.point = resultCardSet.getPoint();
+			let cardIds:Array<number> = [];
+			let cardList = resultCardSet.getCardList();
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				cardIds.push(cardList[i].getCardId());
 			}
-		}
+			msg.cardIds = cardIds;
 
-		public isTurn():boolean
-		{
-			return this.nowOutSeatId == Room.GetInstance().getMySeatId();
+			this.mockSendMessage(msg);
 		}
 	}
 }

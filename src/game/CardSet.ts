@@ -4,10 +4,10 @@
 module game{
 	export class CardSet{
 		protected cardType:number; //牌型
-		protected cardList:Array<Card>; //牌
+		protected cardList:Array<Card> = []; //牌
 		protected connectNum:number = 1; //连续数量,用于连续三带二,姊妹对和顺子
-		protected point:number; //牌型的点数,取最小的
-		protected minPoint:number; //所有牌中最小的点数
+		protected point:number = 0; //牌型的点数,取最小的
+		protected minPoint:number = 0; //所有牌中最小的点数
 		constructor(){
 
 		}

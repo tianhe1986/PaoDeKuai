@@ -71,10 +71,79 @@ module game{
 			this.refreshSeatInfo();
 		}
 
-		public refreshCardNum(cardNum:number):void
+		public setCardNum(cardNum:number):void
 		{
 			this.cardManager.setCardNum(cardNum);
 			this.refreshSeatInfo();
+		}
+
+		public getCardNum():number
+		{
+			return this.cardManager.getCardNum();
+		}
+
+		public getSelectCardList():Array<Card>
+		{
+			return this.cardManager.getSelectCardList();
+		}
+
+		public clearSelectCards():void
+		{
+			this.cardManager.clearSelectCards();
+		}
+
+		public calcuOutCardSet(superCardSet:CardSet):CardSet
+		{
+			return this.cardManager.calcuOutCardSet(superCardSet);
+		}
+
+		public getRealCardNum():number
+		{
+			return this.cardManager.getCardList().length;
+		}
+
+		public removeCardsBySet(cardSet:CardSet):void
+		{
+			this.cardManager.removeCardsBySet(cardSet);
+		}
+
+		public refreshCardNum():void
+		{
+			this.cardManager.refreshCardNum();
+		}
+
+		public clearOutCardView():void
+		{
+			let seatView = this.getSeatView();
+			(seatView.getChildByName("outCard") as Laya.Box).removeChildren();
+			(seatView.getChildByName("outCard") as Laya.Box).visible = false;
+			(seatView.getChildByName("pass") as Laya.Text).visible = false;
+		}
+
+		public showOutCard(cardSet:CardSet, isSelf:boolean):void
+		{
+			//如果是不要
+			let seatView = this.getSeatView();
+			if (cardSet.getCardType() == constants.CardType.PASSED) {
+				(seatView.getChildByName("pass") as Laya.Text).visible = true;
+				(seatView.getChildByName("outCard") as Laya.Box).visible = false;
+			} else { //否则，将cardView放入展示框
+				(seatView.getChildByName("pass") as Laya.Text).visible = false;
+				let outCardView = (seatView.getChildByName("outCard") as Laya.Box);
+				let cardList = cardSet.getCardList();
+				for (let i = 0, len = cardList.length; i < len; i++) {
+					let cardView = cardList[i].getCardView();
+					outCardView.addChild(cardView);
+					if (isSelf) {
+						cardView.x = i * 53;
+						cardView.y = 0;
+					} else {
+						cardView.x = 0
+						cardView.y = i * 31;
+					}
+				}
+				outCardView.visible = true;
+			}
 		}
 	}
 }

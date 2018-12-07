@@ -13,6 +13,18 @@ module game{
 		protected seatMap:Object = null;
 		protected isGaming:boolean = false;
 
+		//当前出牌座位id
+		protected nowOutSeatId:number = 0;
+
+		//当前出的牌
+		protected nowCardSet:CardSet = null;
+
+		//当前最大的座位id
+		protected nowSuperSeatId:number = 0;
+
+		//当前最大的牌
+		protected nowSuperCardSet:CardSet = null;
+
 		protected static instance:Room;
 
 		public static GetInstance():Room
@@ -142,6 +154,98 @@ module game{
 		public getSeat(seatId:number):Seat
 		{
 			return this.seatMap[seatId];
+		}
+
+		public isTurn():boolean
+		{
+			return this.nowOutSeatId == Room.GetInstance().getMySeatId();
+		}
+
+		public setNowOutSeatId(seatId:number):void
+		{
+			this.nowOutSeatId = seatId;
+		}
+
+		public setNowSuperSeatId(seatId:number):void
+		{
+			this.nowSuperSeatId = seatId;
+		}
+
+		public setNowSuperCardSet(cardSet:CardSet):void
+		{
+			this.nowSuperCardSet = cardSet;
+		}
+
+		public getNowSuperCardSet():CardSet
+		{
+			return this.nowSuperCardSet;
+		}
+
+		public outTurn():void
+		{
+			let superCardSet:CardSet = this.getNowSuperCardSet();
+			if (superCardSet.getCardType() == constants.CardType.INIT) { //新出牌，清除之前所有的
+				this.mySeat.clearOutCardView();
+				this.leftSeat.clearOutCardView();
+				this.rightSeat.clearOutCardView();
+			}
+			
+			if (this.isTurn()) {
+				//展示轮到出牌了
+				PageManager.GetInstance().getRoomView().showTips('轮到你出牌了');
+				//清除所有选择的牌
+				this.clearSelectCards();
+				//检查状态，展示出牌和不要按钮
+				this.calcuOutStatus();
+			} else {
+				//调用mock处理出牌
+				PageManager.GetInstance().getRoomView().showTips('');
+				GameLogic.GetInstance().mockOut(this.nowOutSeatId);
+			}
+		}
+
+		public clearSelectCards():void
+		{
+			this.mySeat.clearSelectCards();
+		}
+
+		public calcuOutStatus():void
+		{
+			let roomView = PageManager.GetInstance().getRoomView();
+			if (this.isTurn()) {
+				roomView.showCardHandleButtons();
+				let cardLogic = CardLogic.GetInstance()
+				let cardSet = CardLogic.GetInstance().calcuCardSet(Room.GetInstance().getMySeat().getSelectCardList());
+				if (cardLogic.canOut(cardSet, this.nowSuperCardSet)) { //可以出牌
+					roomView.showCardOut();
+				} else { //不允许出牌
+					roomView.hideCardOut();
+				}
+			} else { //没到，不允许出牌
+				roomView.hideCardHandleButtons();
+			}
+		}
+
+		public processCardOut(seatId, cardSet:CardSet):void
+		{
+			let handleSeat = this.getSeat(seatId);
+			//如果是自己，将cardSet中的牌移除掉
+			if (this.mySeatId == seatId) {
+				handleSeat.removeCardsBySet(cardSet);
+				handleSeat.refreshCardNum();
+			} else { //否则，只更新剩余牌数
+				handleSeat.setCardNum(handleSeat.getCardNum() - cardSet.getCardList().length);
+			}
+			
+			let nextSeatId:number = seatId + 1;
+			if (nextSeatId > 3) {
+				nextSeatId = 1;
+			}
+
+			//清除此座位下家的展示
+			this.getSeat(nextSeatId).clearOutCardView();
+			//展示此座位出的牌
+			handleSeat.showOutCard(cardSet, this.mySeatId == seatId);
 		}
 	}
 }

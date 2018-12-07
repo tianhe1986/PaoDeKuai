@@ -33,14 +33,19 @@ module game{
 
 		public switchStatus():void
 		{
-			if (this.isSelect) {
-				this.isSelect = false;
-				this.cardImage.y = 0;
-			} else {
+			this.setIsSelect(! this.isSelect);
+			Room.GetInstance().calcuOutStatus();
+		}
+
+		public setIsSelect(val:boolean)
+		{
+			if (val) {
 				this.isSelect = true;
 				this.cardImage.y = -75;
+			} else {
+				this.isSelect = false;
+				this.cardImage.y = 0;
 			}
-			GameLogic.GetInstance().calcuOutStatus();
 		}
 
 		public getIsSelect():boolean

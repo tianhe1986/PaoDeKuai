@@ -17,6 +17,11 @@ module game{
 
 		}
 
+		public getCardList():Array<Card>
+		{
+			return this.cardList;
+		}
+
 		public getCardNum():number
 		{
 			return this.cardNum;
@@ -276,10 +281,58 @@ module game{
 		{
 			let result:Array<Card> = [];
 			for (let i = 0, len = this.cardList.length; i < len; i++) {
-				result.push(this.cardList[i]);
+				if (this.cardList[i].getIsSelect()) {
+					result.push(this.cardList[i]);
+				}
 			}
 
 			return result;
+		}
+
+		public clearSelectCards():void
+		{
+			for (let i = 0, len = this.cardList.length; i < len; i++) {
+				this.cardList[i].setIsSelect(false);
+			}
+		}
+
+		public removeCard(cardId:number):void
+		{
+			for (let i = 0, len = this.cardList.length; i < len; i++) {
+				if (this.cardList[i].getCardId() == cardId) {
+					this.cardList.splice(i, 1);
+					break;
+				}
+			}
+		}
+
+		public removeCardsBySet(cardSet:CardSet):void
+		{
+			let cardList = cardSet.getCardList();
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				this.removeCard(cardList[i].getCardId());
+			}
+		}
+
+		public refreshCardNum():void
+		{
+			this.setCardNum(this.cardList.length);
+		}
+
+		public calcuOutCardSet(superCardSet:CardSet):CardSet
+		{
+			if (superCardSet.getCardType() == constants.CardType.INIT) {
+				let cardSet = this.cardSetList[0];
+				this.removeCardsBySet(cardSet);
+				//重新计算牌型
+				this.calcuCardSet();
+				return cardSet;
+			} else {
+				//TODO 真的找出要出的牌
+				let cardSet = new CardSet();
+				cardSet.setCardType(constants.CardType.PASSED);
+				return cardSet;
+			}	
 		}
 	}
 }
