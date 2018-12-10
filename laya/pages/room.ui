@@ -1,9 +1,9 @@
 {
     "x":0,
     "type":"View",
-    "selectedBox":33,
-    "selecteID":32,
-    "props":{"width":1334,"sceneColor":"#000000","height":750},
+    "selectedBox":1,
+    "selecteID":66,
+    "props":{"width":1334,"visible":false,"sceneColor":"#000000","height":750},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -40,17 +40,16 @@
         {
             "x":15,
             "type":"Box",
-            "props":{"y":76,"x":13,"var":"leftSeat"},
+            "props":{"y":76,"x":13,"width":154,"var":"leftSeat","height":184},
             "nodeParent":1,
             "label":"Box(leftSeat)",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
             "compId":10,
             "child":[
                 {
-                    "x":30,
                     "type":"Box",
                     "props":{"width":180,"height":260},
                     "nodeParent":10,
@@ -62,9 +61,8 @@
                     "compId":6,
                     "child":[
                         {
-                            "x":45,
                             "type":"Rect",
-                            "props":{"width":180,"lineWidth":1,"height":260,"fillColor":"#11829f"},
+                            "props":{"width":120,"lineWidth":1,"height":180,"fillColor":"#11829f"},
                             "nodeParent":6,
                             "label":"Rect",
                             "isDirectory":false,
@@ -76,9 +74,8 @@
                         }]
                 },
                 {
-                    "x":30,
                     "type":"Image",
-                    "props":{"y":14,"x":15,"width":150,"name":"avatar","height":150},
+                    "props":{"y":10,"x":10,"width":100,"name":"avatar","height":100},
                     "nodeParent":10,
                     "label":"Image(avatar)",
                     "isDirectory":false,
@@ -89,9 +86,8 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":173,"x":18,"width":145,"name":"nickname","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
+                    "props":{"y":118,"x":11,"width":98,"text":"你的","name":"nickname","height":30,"fontSize":20,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
                     "nodeParent":10,
                     "label":"Text(nickname)",
                     "isDirectory":false,
@@ -102,9 +98,8 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":214,"x":18,"width":145,"name":"score","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
+                    "props":{"y":146,"x":8,"width":103,"text":"111","name":"score","height":30,"fontSize":20,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
                     "nodeParent":10,
                     "label":"Text(score)",
                     "isDirectory":false,
@@ -115,9 +110,8 @@
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":-4,"x":185,"width":47,"name":"cardNum","height":30,"fontSize":24,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                    "props":{"y":-4,"x":118,"width":38,"text":"12","name":"cardNum","height":30,"fontSize":18,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
                     "nodeParent":10,
                     "label":"Text(cardNum)",
                     "isDirectory":false,
@@ -126,95 +120,139 @@
                     "compId":17,
                     "child":[
                         ]
+                },
+                {
+                    "type":"Box",
+                    "props":{"y":8,"x":191,"width":105,"name":"outCard","height":458},
+                    "nodeParent":10,
+                    "label":"Box(outCard)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":52,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"Text",
+                    "props":{"y":69,"x":220,"width":38,"visible":false,"text":"不要","name":"pass","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                    "nodeParent":10,
+                    "label":"Text(pass)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":54,
+                    "child":[
+                        ]
                 }]
         },
         {
             "x":15,
             "type":"Box",
-            "props":{"y":480,"x":13,"var":"mySeat"},
+            "props":{"y":533,"x":13,"width":154,"var":"mySeat","height":184},
             "nodeParent":1,
             "label":"Box(mySeat)",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
-            "compId":18,
+            "compId":34,
             "child":[
                 {
-                    "x":30,
                     "type":"Box",
                     "props":{"width":180,"height":260},
-                    "nodeParent":18,
+                    "nodeParent":34,
                     "label":"Box",
                     "isOpen":true,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
-                    "compId":19,
+                    "compId":35,
                     "child":[
                         {
-                            "x":45,
                             "type":"Rect",
-                            "props":{"width":180,"lineWidth":1,"height":260,"fillColor":"#11829f"},
-                            "nodeParent":19,
+                            "props":{"width":120,"lineWidth":1,"height":180,"fillColor":"#11829f"},
+                            "nodeParent":35,
                             "label":"Rect",
                             "isDirectory":false,
                             "isAniNode":true,
                             "hasChild":false,
-                            "compId":20,
+                            "compId":36,
                             "child":[
                                 ]
                         }]
                 },
                 {
-                    "x":30,
                     "type":"Image",
-                    "props":{"y":14,"x":15,"width":150,"name":"avatar","height":150},
-                    "nodeParent":18,
+                    "props":{"y":10,"x":10,"width":100,"name":"avatar","height":100},
+                    "nodeParent":34,
                     "label":"Image(avatar)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":21,
+                    "compId":37,
                     "child":[
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":173,"x":18,"width":145,"name":"nickname","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
-                    "nodeParent":18,
+                    "props":{"y":118,"x":11,"width":98,"text":"你的","name":"nickname","height":30,"fontSize":20,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
+                    "nodeParent":34,
                     "label":"Text(nickname)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":22,
+                    "compId":38,
                     "child":[
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":214,"x":18,"width":145,"name":"score","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
-                    "nodeParent":18,
+                    "props":{"y":146,"x":8,"width":103,"text":"111","name":"score","height":30,"fontSize":20,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
+                    "nodeParent":34,
                     "label":"Text(score)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":23,
+                    "compId":39,
                     "child":[
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":-4,"x":185,"width":47,"name":"cardNum","height":30,"fontSize":24,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
-                    "nodeParent":18,
+                    "props":{"y":-4,"x":118,"width":38,"text":"12","name":"cardNum","height":30,"fontSize":18,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                    "nodeParent":34,
                     "label":"Text(cardNum)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":24,
+                    "compId":40,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"Box",
+                    "props":{"y":-142,"x":381,"width":577,"name":"outCard","height":150},
+                    "nodeParent":34,
+                    "label":"Box(outCard)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":51,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"Text",
+                    "props":{"y":-55,"x":614,"width":38,"visible":false,"text":"不要","name":"pass","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                    "nodeParent":34,
+                    "label":"Text(pass)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":55,
                     "child":[
                         ]
                 }]
@@ -222,107 +260,293 @@
         {
             "x":15,
             "type":"Box",
-            "props":{"y":76,"x":1093,"width":233,"var":"rightSeat","height":271},
+            "props":{"y":76,"x":1203,"width":154,"var":"rightSeat","height":184},
             "nodeParent":1,
             "label":"Box(rightSeat)",
-            "isOpen":true,
+            "isOpen":false,
             "isDirectory":true,
             "isAniNode":true,
             "hasChild":true,
-            "compId":25,
+            "compId":41,
             "child":[
                 {
-                    "x":30,
                     "type":"Box",
-                    "props":{"y":4,"x":53,"width":180,"height":260},
-                    "nodeParent":25,
+                    "props":{"width":180,"height":260},
+                    "nodeParent":41,
                     "label":"Box",
-                    "isOpen":true,
+                    "isOpen":false,
                     "isDirectory":true,
                     "isAniNode":true,
                     "hasChild":true,
-                    "compId":26,
+                    "compId":42,
                     "child":[
                         {
-                            "x":45,
                             "type":"Rect",
-                            "props":{"width":180,"lineWidth":1,"height":260,"fillColor":"#11829f"},
-                            "nodeParent":26,
+                            "props":{"width":120,"lineWidth":1,"height":180,"fillColor":"#11829f"},
+                            "nodeParent":42,
                             "label":"Rect",
                             "isDirectory":false,
                             "isAniNode":true,
                             "hasChild":false,
-                            "compId":27,
+                            "compId":43,
                             "child":[
                                 ]
                         }]
                 },
                 {
-                    "x":30,
                     "type":"Image",
-                    "props":{"y":18,"x":68,"width":150,"name":"avatar","height":150},
-                    "nodeParent":25,
+                    "props":{"y":10,"x":10,"width":100,"name":"avatar","height":100},
+                    "nodeParent":41,
                     "label":"Image(avatar)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":28,
+                    "compId":44,
                     "child":[
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":177,"x":71,"width":145,"name":"nickname","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
-                    "nodeParent":25,
+                    "props":{"y":118,"x":11,"width":98,"text":"你的","name":"nickname","height":30,"fontSize":20,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
+                    "nodeParent":41,
                     "label":"Text(nickname)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":29,
+                    "compId":45,
                     "child":[
                         ]
                 },
                 {
-                    "x":30,
                     "type":"Text",
-                    "props":{"y":218,"x":71,"width":145,"name":"score","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
-                    "nodeParent":25,
+                    "props":{"y":146,"x":8,"width":103,"text":"111","name":"score","height":30,"fontSize":20,"font":"Microsoft YaHei","color":"#ffffff","align":"center"},
+                    "nodeParent":41,
                     "label":"Text(score)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":30,
+                    "compId":46,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"Text",
+                    "props":{"y":-6,"x":-43,"width":38,"text":"12","name":"cardNum","height":30,"fontSize":18,"font":"Microsoft YaHei","color":"#ffffff","align":"right"},
+                    "nodeParent":41,
+                    "label":"Text(cardNum)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":47,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"Box",
+                    "props":{"y":8,"x":-153,"width":105,"name":"outCard","height":458},
+                    "nodeParent":41,
+                    "label":"Box(outCard)",
+                    "isOpen":true,
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":53,
+                    "child":[
+                        ]
+                },
+                {
+                    "type":"Text",
+                    "props":{"y":74,"x":-128,"width":38,"visible":false,"text":"不要","name":"pass","height":30,"fontSize":30,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                    "nodeParent":41,
+                    "label":"Text(pass)",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":56,
+                    "child":[
+                        ]
+                }]
+        },
+        {
+            "x":15,
+            "type":"Box",
+            "props":{"y":562,"x":194,"width":1009,"var":"handCard","height":150},
+            "nodeParent":1,
+            "label":"Box(handCard)",
+            "isOpen":true,
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":33,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Text",
+            "props":{"y":47,"x":576,"var":"tips","text":"好的","fontSize":24,"font":"Microsoft YaHei","color":"#ffffff"},
+            "nodeParent":1,
+            "label":"Text(tips)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":48,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":441,"x":491,"width":99,"visible":false,"var":"cardOutButton","skin":"comp/button.png","labelSize":20,"labelFont":"Arial","label":"出牌","height":31},
+            "nodeParent":1,
+            "label":"Button(cardOutButton)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":49,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Button",
+            "props":{"y":441,"x":728,"width":99,"visible":false,"var":"passButton","skin":"comp/button.png","labelSize":20,"labelFont":"Arial","label":"不要","height":31},
+            "nodeParent":1,
+            "label":"Button(passButton)",
+            "isDirectory":false,
+            "isAniNode":true,
+            "hasChild":false,
+            "compId":50,
+            "child":[
+                ]
+        },
+        {
+            "x":15,
+            "type":"Box",
+            "props":{"y":0,"x":0,"var":"mock","alpha":0.8},
+            "nodeParent":1,
+            "label":"Box(mock)",
+            "isOpen":null,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":58,
+            "child":[
+                {
+                    "type":"Rect",
+                    "props":{"width":1334,"lineWidth":1,"height":750,"fillColor":"#000000"},
+                    "nodeParent":58,
+                    "label":"Rect",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":57,
+                    "child":[
+                        ]
+                }],
+            "$HIDDEN":true
+        },
+        {
+            "x":15,
+            "type":"Box",
+            "props":{"y":103,"x":464,"visible":false,"var":"result"},
+            "nodeParent":1,
+            "label":"Box(result)",
+            "isOpen":true,
+            "isDirectory":true,
+            "isAniNode":true,
+            "hasChild":true,
+            "compId":65,
+            "child":[
+                {
+                    "x":30,
+                    "type":"Text",
+                    "props":{"x":34,"text":"本局获胜者是","fontSize":32,"font":"Microsoft YaHei","color":"#ffffff"},
+                    "nodeParent":65,
+                    "label":"Text",
+                    "isDirectory":false,
+                    "isAniNode":true,
+                    "hasChild":false,
+                    "compId":59,
                     "child":[
                         ]
                 },
                 {
                     "x":30,
                     "type":"Text",
-                    "props":{"y":0,"x":2,"width":47,"name":"cardNum","height":30,"fontSize":24,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
-                    "nodeParent":25,
-                    "label":"Text(cardNum)",
+                    "props":{"x":255,"text":"本局获胜者是","name":"winner","fontSize":32,"font":"Microsoft YaHei","color":"#ffffff"},
+                    "nodeParent":65,
+                    "label":"Text(winner)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":31,
+                    "compId":60,
                     "child":[
                         ]
                 },
                 {
                     "x":30,
-                    "type":"Box",
-                    "props":{"y":486,"x":-851,"width":926,"var":"handCard","height":150},
-                    "nodeParent":25,
-                    "label":"Box(handCard)",
-                    "isOpen":true,
+                    "type":"List",
+                    "props":{"y":86,"x":0,"width":251,"spaceY":10,"name":"resultList","height":130},
+                    "nodeParent":65,
+                    "label":"List(resultList)",
+                    "isOpen":false,
+                    "isDirectory":true,
+                    "isAniNode":true,
+                    "hasChild":true,
+                    "compId":64,
+                    "child":[
+                        {
+                            "type":"Box",
+                            "props":{"renderType":"render"},
+                            "nodeParent":64,
+                            "label":"Box",
+                            "isOpen":true,
+                            "isDirectory":true,
+                            "isAniNode":false,
+                            "hasChild":true,
+                            "compId":63,
+                            "child":[
+                                {
+                                    "type":"Text",
+                                    "props":{"text":"你的","name":"nickname","fontSize":32,"font":"Microsoft YaHei","color":"#ffffff"},
+                                    "nodeParent":63,
+                                    "label":"Text(nickname)",
+                                    "isDirectory":false,
+                                    "isAniNode":false,
+                                    "hasChild":false,
+                                    "compId":61,
+                                    "child":[
+                                        ]
+                                },
+                                {
+                                    "type":"Text",
+                                    "props":{"x":213,"text":"10","name":"score","fontSize":32,"font":"Microsoft YaHei","color":"#ffffff"},
+                                    "nodeParent":63,
+                                    "label":"Text(score)",
+                                    "isDirectory":false,
+                                    "isAniNode":false,
+                                    "hasChild":false,
+                                    "compId":62,
+                                    "child":[
+                                        ]
+                                }]
+                        }]
+                },
+                {
+                    "x":30,
+                    "type":"Button",
+                    "props":{"y":238,"x":93,"width":99,"skin":"comp/button.png","name":"confirm","labelSize":20,"labelFont":"Arial","label":"确定","height":31},
+                    "nodeParent":65,
+                    "label":"Button(confirm)",
                     "isDirectory":false,
                     "isAniNode":true,
                     "hasChild":false,
-                    "compId":33,
+                    "compId":66,
                     "child":[
                         ]
-                }]
+                }],
+            "$HIDDEN":true
         }],
     "animations":[
         {
