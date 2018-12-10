@@ -206,6 +206,10 @@ module game{
 			this.directInsert(twoList, constants.CardType.DOUBLE);
 			this.directInsert(singleList, constants.CardType.SINGLE);
 
+			this.cardSetList.sort((a:CardSet, b:CardSet) => {
+				return a.getMinPoint() - b.getMinPoint();
+			});
+
 			//this.printCardSetList();
 			/*this.printCardList(bombList, "bomb");
 			this.printCardList(connectThreeList, "connectThree");
@@ -328,7 +332,21 @@ module game{
 				this.calcuCardSet();
 				return cardSet;
 			} else {
-				//TODO 真的找出要出的牌
+				//有相同类型的牌，则出
+				for (let i = 0; i < this.cardSetList.length; i++) {
+					if (this.cardSetList[i].getCardType() == superCardSet.getCardType()
+						&& this.cardSetList[i].getConnectNum() == superCardSet.getConnectNum()
+						&& this.cardSetList[i].getPoint() > superCardSet.getPoint()
+					) {
+						let cardSet = this.cardSetList[i];
+						this.removeCardsBySet(cardSet);
+						//重新计算牌型
+						this.calcuCardSet();
+						return cardSet;
+					}
+				}
+				//TODO: 找最适合出的牌
+				//TODO: 统一判断有没有
 				let cardSet = new CardSet();
 				cardSet.setCardType(constants.CardType.PASSED);
 				return cardSet;
