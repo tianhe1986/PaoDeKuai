@@ -425,7 +425,7 @@ var ___Laya=(function(){
 	Laya.timer=null;
 	Laya.scaleTimer=null;
 	Laya.loader=null;
-	Laya.version="1.7.21";
+	Laya.version="1.7.22";
 	Laya.render=null;
 	Laya._currentStage=null;
 	Laya._isinit=false;
@@ -7727,6 +7727,18 @@ var Byte=(function(){
 		var uint8array=new Uint8Array(arraybuffer);
 		this._u8d_.set(uint8array.subarray(offset,offset+length),this._pos_);
 		this._pos_+=length;
+	}
+
+	/**
+	*读取ArrayBuffer数据
+	*@param length
+	*@return
+	*/
+	__proto.readArrayBuffer=function(length){
+		var rst;
+		rst=this._u8d_.buffer.slice(this._pos_,this._pos_+length);
+		this._pos_=this._pos_+length
+		return rst;
 	}
 
 	/**
