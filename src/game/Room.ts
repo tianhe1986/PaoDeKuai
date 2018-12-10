@@ -294,5 +294,15 @@ module game{
 			//展示结果
 			PageManager.GetInstance().getRoomView().showResult(this.getSeat(winner).getUserInfo().getNickname(), resultList);
 		}
+
+		public handlePunish(seatId:number, score:number):void
+		{
+			let handleSeat = this.getSeat(seatId);
+			handleSeat.getUserInfo().setScore(handleSeat.getUserInfo().getScore() + score);
+			handleSeat.refreshSeatInfo();
+			if (seatId == this.mySeatId) {
+				PageManager.GetInstance().getRoomView().showPunish(Math.abs(score));
+			}
+		}
 	}
 }

@@ -191,8 +191,8 @@ module game{
 					this.cardSetList.push(newCardSet);
 					i++;
 				} else { //不够,直接拆了,TODO: 优化,考虑拆顺子,连对
-					let handleList = connectThreeList[i].slice();
-					connectThreeList.splice(i, 1);
+					let handleList = threeList[i].slice();
+					threeList.splice(i, 1);
 					while (handleList.length) {
 						twoList.push(handleList.splice(0, 2));
 						singleList.push(handleList.splice(0, 1));

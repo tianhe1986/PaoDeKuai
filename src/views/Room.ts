@@ -7,6 +7,7 @@ module views{
 			super();
 			this.initButtons();
 			this.initResult();
+			this.initPunish();
 		}
 
 		public initButtons():void
@@ -19,6 +20,11 @@ module views{
 		{
 			(this.result.getChildByName("resultList") as Laya.List).renderHandler = new Laya.Handler(this, this.resultItem);
 			this.result.getChildByName("confirm").on(Laya.Event.CLICK, this, this.onRestart);
+		}
+
+		public initPunish():void
+		{
+			this.punish.getChildByName("confirm").on(Laya.Event.CLICK, this, this.hidePunish);
 		}
 
 		public resultItem(cell:Laya.Box,index:number):void
@@ -105,6 +111,7 @@ module views{
 			this.result.visible = false;
 			this.hideMock();
 			this.hideCardHandleButtons();
+			this.hidePunish();
 			this.showTips("");
 			this.handCard.removeChildren();
 			(this.mySeat.getChildByName("outCard") as Laya.Box).visible = false;
@@ -113,6 +120,19 @@ module views{
 			(this.leftSeat.getChildByName("pass") as Laya.Text).visible = false;
 			(this.rightSeat.getChildByName("outCard") as Laya.Box).visible = false;
 			(this.rightSeat.getChildByName("pass") as Laya.Text).visible = false;
+		}
+
+		public showPunish(score:number):void
+		{
+			this.showMock();
+			(this.punish.getChildByName("score") as Laya.Text).text = "" + score;
+			this.punish.visible = true;
+		}
+
+		public hidePunish():void
+		{
+			this.hideMock();
+			this.punish.visible = false;
 		}
 	}
 }

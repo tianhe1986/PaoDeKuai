@@ -139,6 +139,15 @@ module game{
 			});
 		}
 
+		public mockPunish(seatId:number, score:number):void
+		{
+			let msg:message.Punish = new message.Punish();
+			msg.seatId = seatId;
+			msg.score = -Math.abs(score);
+
+			this.mockSendMessage(msg);
+		}
+
 		public matchAndClearSeatCard(seatId:number, cardSet:CardSet):boolean
 		{
 			let cardList = cardSet.getCardList();
@@ -181,7 +190,10 @@ module game{
 		{
 			let seatId = msg.seatId;
 			let cardSet = msg.getCardSet();
-			//TODO 检查牌型是否匹配
+			//检查牌型是否匹配
+			if ( ! this.checkCardSetMatch(seatId, cardSet)) {
+				return;
+			}
 
 			if (this.matchAndClearSeatCard(seatId, cardSet)) {
 				this.mockSendOutCard(seatId, cardSet);
@@ -229,6 +241,43 @@ module game{
 				
 				//下一轮出牌
 				this.mockOutTurn();
+			}
+		}
+
+		public checkCardSetMatch(seatId:number, cardSet:CardSet):boolean
+		{
+			if (cardSet.getCardType() == constants.CardType.PASSED) { //不要，计算手中是否有大的牌
+				if (seatId != Room.GetInstance().getMySeatId()) { //电脑暂时不检查
+					return true;
+				}
+				let cardList = [];
+				for (let cardId in this.mockSeatCardMap[seatId]) {
+					let newCard = new Card();
+					newCard.setCardId(parseInt(cardId));
+					cardList.push(newCard);
+				}
+				if (CardLogic.GetInstance().hasLarge(cardList, this.mockNowSuperCardSet)) {
+					//发送扣分消息
+					this.mockPunish(seatId, this.mockNowSuperCardSet.getCardList().length);
+					//还是此人出牌
+					this.mockOutTurn();
+					return false;
+				}
+
+				return true;
+			} else {
+				//检查传的牌与算出来的牌是否相同
+				let calcuCardSet = CardLogic.GetInstance().calcuCardSet(cardSet.getCardList().slice());
+				if (calcuCardSet.getCardType() != cardSet.getCardType() || calcuCardSet.getConnectNum() != cardSet.getConnectNum() || calcuCardSet.getPoint() != cardSet.getPoint()) {
+					//TODO: 发假消息，要揍一顿
+					return false;
+				}
+
+				if ( ! CardLogic.GetInstance().canOut(cardSet, this.mockNowSuperCardSet)) {
+					return false;
+				}
+
+				return true;
 			}
 		}
 

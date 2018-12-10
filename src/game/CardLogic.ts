@@ -68,7 +68,7 @@ module game{
 				while (true) { //只可能是连续三带二，顺子，或姊妹对
 					if (cardList.length % 5 == 0) { //三带二
 						let threePoints = this.findAllLastCard(cardList, 3);
-						if (threePoints.length == cardList.length / 5 && this.isStraight(threePoints)) {
+						if (threePoints.length == cardList.length / 5 && this.isStraight(threePoints) && threePoints[threePoints.length - 1].getPoint() != 15) {
 							cardType = constants.CardType.CONNECT_THREE;
 							point = threePoints[0].getPoint();
 							connectNum = cardList.length / 5;
@@ -185,6 +185,93 @@ module game{
 			return false;
 		}
 
+		public hasLarge(cardList:Array<Card>, cardSet:CardSet):boolean
+		{
+			cardList.sort((a:Card, b:Card) => { //从小到大排序
+				return a.getCardId() - b.getCardId();
+			});
+			let findAllLastCard = this.findAllLastCard(cardList, 4);
+			let cardType = cardSet.getCardType();
+			let point = cardSet.getPoint();
+			let cardCount = cardSet.getCardList().length;
+			if (findAllLastCard.length) { //有炸弹
+				if (cardType == constants.CardType.BOMB) {
+					if (findAllLastCard[findAllLastCard.length - 1].getPoint() > point) {
+						return true;
+					}
+					return false;
+				} else {
+					return true;
+				}
+			}
+
+			if (cardList.length < cardCount) { //牌数量不够
+				return false;
+			}
+
+			if (cardType == constants.CardType.BOMB) { //碰上炸弹了
+				
+			} else if (cardType == constants.CardType.SINGLE) { //单张，有一个大的
+				if (cardList[cardList.length - 1].getPoint() > point) {
+					return true;
+				}
+			} else if (cardType == constants.CardType.DOUBLE) { //两张，有一个大的
+				findAllLastCard = this.findAllLastCard(cardList, 2);
+				if (findAllLastCard.length && findAllLastCard[findAllLastCard.length - 1].getPoint() > point) {
+					return true;
+				}
+			} else if (cardType == constants.CardType.THREE_TWO) { //三带二，有一个大的
+				findAllLastCard = this.findAllLastCard(cardList, 3);
+				if (findAllLastCard.length && findAllLastCard[findAllLastCard.length - 1].getPoint() > point) {
+					return true;
+				}
+			} else if (cardType == constants.CardType.CONNECT_DOUBLE) { //姊妹对
+				findAllLastCard = this.findAllLastCard(cardList, 2);
+				if (this.hasStraight(findAllLastCard, point, cardSet.getConnectNum())) {
+					return true;
+				}
+			} else if (cardType == constants.CardType.STRAIGHT) { //顺子
+				if (this.hasStraight(cardList, point, cardSet.getConnectNum())) {
+					return true;
+				}
+			} else if (cardType == constants.CardType.CONNECT_THREE) { //连续三带二
+				findAllLastCard = this.findAllLastCard(cardList, 3);
+				if (this.hasStraight(findAllLastCard, point, cardSet.getConnectNum())) {
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		public hasStraight(cardList:Array<Card>, point:number, count:number):boolean
+		{
+			if (cardList.length) {
+				let nowCount = 0;
+				let nowPoint = 0;
+				for (let i = 0, len = cardList.length; i < len; i++) {
+					let tempPoint = cardList[i].getPoint();
+					if (tempPoint <= point || tempPoint == 15) {
+						continue;
+					}
+					if (tempPoint == nowPoint) {
+						continue;
+					} else if (tempPoint == nowPoint + 1) {
+						nowCount++;
+						if (nowCount == count) {
+							return true;
+						}
+						nowPoint = tempPoint;
+					} else {
+						nowCount = 1;
+						nowPoint = tempPoint;
+					}
+				}
+			}
+
+			return false;
+		}
+
 		//找炸弹
 		public findAllBomb(cardList:Array<Card>):Array<Array<Card>>
 		{
@@ -207,10 +294,10 @@ module game{
 			let result = [];
 			let i = 0;
 			while (i <= cardList.length - 6) {
-				if (cardList[i].getPoint() == cardList[i+5].getPoint() - 1) { //找到第一个连对
+				if (cardList[i].getPoint() == cardList[i+5].getPoint() - 1 && cardList[i+5].getPoint() != 15) { //找到第一个连对
 					//继续找后面连在一起的
 					let endIndex = i + 5;
-					while (endIndex + 3 < cardList.length && cardList[endIndex].getPoint() == cardList[endIndex+3].getPoint() - 1) {
+					while (endIndex + 3 < cardList.length && cardList[endIndex].getPoint() == cardList[endIndex+3].getPoint() - 1 && cardList[endIndex+3].getPoint() != 15) {
 						endIndex += 3;
 					}
 					result.push(cardList.splice(i, endIndex + 1 - i));
