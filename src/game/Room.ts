@@ -72,6 +72,8 @@ module game{
 			this.setIsSingle(true);
 			PageManager.GetInstance().showRoom();
 
+			PageManager.GetInstance().getRoomView().clearAll();
+
 			//创造虚拟用户
 			this.mockSeat();
 
@@ -189,7 +191,7 @@ module game{
 				this.leftSeat.clearOutCardView();
 				this.rightSeat.clearOutCardView();
 			}
-			
+
 			if (this.isTurn()) {
 				//展示轮到出牌了
 				PageManager.GetInstance().getRoomView().showTips('轮到你出牌了');
@@ -199,7 +201,7 @@ module game{
 				this.calcuOutStatus();
 			} else {
 				//调用mock处理出牌
-				PageManager.GetInstance().getRoomView().showTips('');
+				PageManager.GetInstance().getRoomView().showTips('请等待' + this.getSeat(this.nowOutSeatId).getUserInfo().getNickname() + '出牌');
 				GameLogic.GetInstance().mockOut(this.nowOutSeatId);
 			}
 		}
@@ -226,6 +228,28 @@ module game{
 			}
 		}
 
+		public confirmCardOut():void
+		{
+			if (this.isTurn()) {
+				let cardLogic = CardLogic.GetInstance()
+				let cardSet = CardLogic.GetInstance().calcuCardSet(Room.GetInstance().getMySeat().getSelectCardList());
+				if (cardLogic.canOut(cardSet, this.nowSuperCardSet)) { //可以出牌
+					GameLogic.GetInstance().sendOutCard(this.mySeatId, cardSet);
+				} else { //不允许出牌
+					
+				}
+			} else { //没到，不允许出牌
+				
+			}
+		}
+
+		public pass():void
+		{
+			let cardSet = new CardSet();
+			cardSet.setCardType(constants.CardType.PASSED);
+			GameLogic.GetInstance().sendOutCard(this.mySeatId, cardSet);
+		}
+
 		public processCardOut(seatId, cardSet:CardSet):void
 		{
 			let handleSeat = this.getSeat(seatId);
@@ -233,6 +257,8 @@ module game{
 			if (this.mySeatId == seatId) {
 				handleSeat.removeCardsBySet(cardSet);
 				handleSeat.refreshCardNum();
+				handleSeat.refreshHandCardView();
+				handleSeat.refreshSeatInfo();
 			} else { //否则，只更新剩余牌数
 				handleSeat.setCardNum(handleSeat.getCardNum() - cardSet.getCardList().length);
 			}
@@ -242,10 +268,28 @@ module game{
 				nextSeatId = 1;
 			}
 
+			//关闭按钮展示
+			PageManager.GetInstance().getRoomView().hideCardHandleButtons();
 			//清除此座位下家的展示
 			this.getSeat(nextSeatId).clearOutCardView();
 			//展示此座位出的牌
 			handleSeat.showOutCard(cardSet, this.mySeatId == seatId);
+		}
+
+		public handleGameOver(winner:number, scoreMap:Object):void
+		{
+			let resultList = [];
+			//处理分值
+			for (let seatId in scoreMap) {
+				let handleSeat = this.getSeat(parseInt(seatId));
+				let userInfo = handleSeat.getUserInfo();
+				userInfo.setScore(userInfo.getScore() + scoreMap[seatId]);
+				handleSeat.refreshSeatInfo();
+				resultList.push([userInfo.getNickname(), scoreMap[seatId]]);
+			}
+
+			//展示结果
+			PageManager.GetInstance().getRoomView().showResult(this.getSeat(winner).getUserInfo().getNickname(), resultList);
 		}
 	}
 }

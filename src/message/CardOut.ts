@@ -34,6 +34,12 @@ module message{
 
 		public receiveHandle():void
 		{
+			let cardSet = this.getCardSet();
+			game.Room.GetInstance().processCardOut(this.seatId, cardSet);
+		}
+
+		public getCardSet():game.CardSet
+		{
 			let cardList:Array<game.Card> = [];
 			for (let i = 0, len = this.cardIds.length; i < len; i++) {
 				let newCard = new game.Card();
@@ -45,12 +51,12 @@ module message{
 			cardSet.setConnectNum(this.connectNum);
 			cardSet.setPoint(this.point);
 			cardSet.setCardList(cardList);
-			game.Room.GetInstance().processCardOut(this.seatId, cardSet);
+			return cardSet;
 		}
 
 		public mockSend():void
 		{
-			
+			game.GameLogic.GetInstance().mockHandleOut(this);
 		}
 	}
 }

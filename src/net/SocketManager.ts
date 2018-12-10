@@ -37,6 +37,7 @@ module net{
 
 		public sendMessage(msg:message.Base):void
 		{
+			msg.writeData();
 			msg.mockSend();
 		}
 	}

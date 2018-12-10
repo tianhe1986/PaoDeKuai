@@ -21,12 +21,29 @@ module game{
 
 		public calcuCardSet(cardList:Array<Card>):CardSet
 		{
-			return null;
+			//TODO: 真的计算
+			let cardSet = new CardSet();
+			cardSet.setCardType(constants.CardType.SINGLE);
+			cardSet.setCardList(cardList);
+			cardSet.setPoint(3);
+			return cardSet;
 		}
 
 		public canOut(newCardSet:CardSet, nowCardSet:CardSet):boolean
 		{
-			return false;
+			//牌型相同
+			if (newCardSet.getCardType() == nowCardSet.getCardType()) {
+				if (newCardSet.getConnectNum() == nowCardSet.getConnectNum() && newCardSet.getPoint() > nowCardSet.getPoint()) {
+					return true;
+				}
+			} else {
+				//炸弹可以出
+				if (newCardSet.getCardType() == constants.CardType.BOMB) {
+					return true;
+				}
+			}
+
+			return true;
 		}
 
 		//找炸弹

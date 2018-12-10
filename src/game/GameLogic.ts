@@ -24,6 +24,11 @@ module game{
 		}
 
 		constructor(){
+			this.mockClearSeatCard();
+		}
+
+		public mockClearSeatCard():void
+		{
 			this.mockSeatCardMap = {1:{}, 2:{}, 3:{}};
 		}
 
@@ -72,6 +77,7 @@ module game{
 				arr[i] = itemAtIndex;
 			}
 
+			this.mockClearSeatCard();
 			this.processSeatCard(1, arr.splice(0, 17));
 			this.processSeatCard(2, arr.splice(0, 17));
 			this.processSeatCard(3, arr);
@@ -120,15 +126,35 @@ module game{
 
 		public mockOutTurn():void
 		{
-			//下个发牌者发送出牌消息
-			let msg:message.OutTurn = new message.OutTurn();
-			msg.seatId = this.mockNowOutSeatId;
-			msg.superSeatId = this.mockNowSuperSeatId;
-			msg.cardType = this.mockNowSuperCardSet.getCardType();
-			msg.connectNum = this.mockNowSuperCardSet.getConnectNum();
-			msg.point = this.mockNowSuperCardSet.getPoint();
+			Laya.timer.once(500, this, () => {
+				//下个发牌者发送出牌消息
+				let msg:message.OutTurn = new message.OutTurn();
+				msg.seatId = this.mockNowOutSeatId;
+				msg.superSeatId = this.mockNowSuperSeatId;
+				msg.cardType = this.mockNowSuperCardSet.getCardType();
+				msg.connectNum = this.mockNowSuperCardSet.getConnectNum();
+				msg.point = this.mockNowSuperCardSet.getPoint();
 
-			this.mockSendMessage(msg);
+				this.mockSendMessage(msg);
+			});
+		}
+
+		public matchAndClearSeatCard(seatId:number, cardSet:CardSet):boolean
+		{
+			let cardList = cardSet.getCardList();
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				let cardId = cardList[i].getCardId();
+				if (this.mockSeatCardMap[seatId][cardId] == undefined) {
+					return false;
+				}
+			}
+
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				let cardId = cardList[i].getCardId();
+				delete(this.mockSeatCardMap[seatId][cardId]);
+			}
+
+			return true;
 		}
 
 		public mockOut(seatId:number):void
@@ -136,50 +162,77 @@ module game{
 			if (seatId == Room.GetInstance().getMySeatId()) {
 				return;
 			}
-			let seat = Room.GetInstance().getSeat(seatId);
-			let superCardSet = Room.GetInstance().getNowSuperCardSet();
 
-			let resultCardSet = seat.calcuOutCardSet(superCardSet);
+			//延迟处理
+			Laya.timer.once(500, this, () => {
+				let seat = Room.GetInstance().getSeat(seatId);
+				let superCardSet = Room.GetInstance().getNowSuperCardSet();
 
-			//发送出牌消息
-			this.sendOutCard(seatId, resultCardSet);
+				let resultCardSet = seat.calcuOutCardSet(superCardSet);
 
-			//手里没牌了，发送游戏结束
-			if (seat.getRealCardNum() == 0) {
-				return;
-			}
-
-			this.mockNowCardSet = resultCardSet;
-			this.mockNowOutSeatId++;
-			if (this.mockNowOutSeatId > 3) {
-				this.mockNowOutSeatId = 1;
-			}
-			//如果是不要
-			if (resultCardSet.getCardType() == constants.CardType.PASSED) {
-				//转回到当前最大者了，新一轮,否则，保持当前最大牌不变，下一个用户
-				if (this.mockNowSuperSeatId == this.mockNowOutSeatId) {
-					let newCardSet = new CardSet();
-					newCardSet.setCardType(constants.CardType.INIT);
-					this.mockNowSuperCardSet = newCardSet;
-				}
-			} else {
-				//更新最大者
-				this.mockNowSuperSeatId = seatId;
-				this.mockNowSuperCardSet = resultCardSet;
-			}
-
+				//发送出牌消息
+				this.sendOutCard(seatId, resultCardSet);
+			});
 			
-			//下一轮出牌
-			this.mockOutTurn();
 		}
 
 		//处理出牌
-		public mockHandleOut(msg):void
+		public mockHandleOut(msg:message.CardOut):void
 		{
+			let seatId = msg.seatId;
+			let cardSet = msg.getCardSet();
+			//TODO 检查牌型是否匹配
 
+			if (this.matchAndClearSeatCard(seatId, cardSet)) {
+				this.mockSendOutCard(seatId, cardSet);
+
+				//手里没牌了，发送游戏结束
+				if (Object.keys(this.mockSeatCardMap[seatId]).length == 0) {
+					let msg:message.GameOver = new message.GameOver();
+					msg.winner = seatId;
+					let scoreList = [];
+					let handleSeatId = seatId;
+					let winScore:number = 0;
+					for (let i = 0; i < 3; i++) {
+						scoreList.push([handleSeatId, -Object.keys(this.mockSeatCardMap[handleSeatId]).length]);
+						winScore += Object.keys(this.mockSeatCardMap[handleSeatId]).length;
+						handleSeatId++;
+						if (handleSeatId > 3) {
+							handleSeatId = 1;
+						}
+					}
+					scoreList[0][1] = winScore;
+					msg.scoreList = scoreList;
+					this.mockSendMessage(msg);
+					return;
+				}
+
+				this.mockNowCardSet = cardSet;
+				this.mockNowOutSeatId++;
+				if (this.mockNowOutSeatId > 3) {
+					this.mockNowOutSeatId = 1;
+				}
+				//如果是不要
+				if (cardSet.getCardType() == constants.CardType.PASSED) {
+					//转回到当前最大者了，新一轮,否则，保持当前最大牌不变，下一个用户
+					if (this.mockNowSuperSeatId == this.mockNowOutSeatId) {
+						let newCardSet = new CardSet();
+						newCardSet.setCardType(constants.CardType.INIT);
+						this.mockNowSuperCardSet = newCardSet;
+					}
+				} else {
+					//更新最大者
+					this.mockNowSuperSeatId = seatId;
+					this.mockNowSuperCardSet = cardSet;
+				}
+
+				
+				//下一轮出牌
+				this.mockOutTurn();
+			}
 		}
-		
-		public sendOutCard(seatId:number, resultCardSet:CardSet):void
+
+		public generateCardOutMsg(seatId:number, resultCardSet:CardSet):message.CardOut
 		{
 			let msg:message.CardOut = new message.CardOut();
 			msg.seatId = seatId;
@@ -192,8 +245,20 @@ module game{
 				cardIds.push(cardList[i].getCardId());
 			}
 			msg.cardIds = cardIds;
+			return msg;
+		}
+		
+		public mockSendOutCard(seatId:number, resultCardSet:CardSet):void
+		{
+			let msg:message.CardOut = this.generateCardOutMsg(seatId, resultCardSet);
 
 			this.mockSendMessage(msg);
+		}
+
+		public sendOutCard(seatId:number, resultCardSet:CardSet):void
+		{
+			let msg:message.CardOut = this.generateCardOutMsg(seatId, resultCardSet);
+			net.SocketManager.GetInstance().sendMessage(msg);
 		}
 	}
 }

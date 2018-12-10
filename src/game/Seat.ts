@@ -112,6 +112,11 @@ module game{
 			this.cardManager.refreshCardNum();
 		}
 
+		public refreshHandCardView():void
+		{
+			this.cardManager.refreshHandCardView();
+		}
+
 		public clearOutCardView():void
 		{
 			let seatView = this.getSeatView();
