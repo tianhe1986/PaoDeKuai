@@ -33,8 +33,10 @@ module game{
 
 		public switchStatus():void
 		{
-			this.setIsSelect(! this.isSelect);
-			Room.GetInstance().calcuOutStatus();
+			if (Room.GetInstance().isTurn()) {
+				this.setIsSelect(! this.isSelect);
+				Room.GetInstance().calcuOutStatus();
+			}
 		}
 
 		public setIsSelect(val:boolean)

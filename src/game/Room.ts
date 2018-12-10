@@ -216,6 +216,9 @@ module game{
 			let roomView = PageManager.GetInstance().getRoomView();
 			if (this.isTurn()) {
 				roomView.showCardHandleButtons();
+				if (this.nowSuperCardSet.getCardType() == constants.CardType.INIT) {
+					roomView.hidePass();
+				}
 				let cardLogic = CardLogic.GetInstance()
 				let cardSet = CardLogic.GetInstance().calcuCardSet(Room.GetInstance().getMySeat().getSelectCardList());
 				if (cardLogic.canOut(cardSet, this.nowSuperCardSet)) { //可以出牌

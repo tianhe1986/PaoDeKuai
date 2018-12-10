@@ -206,7 +206,7 @@ module game{
 			this.directInsert(twoList, constants.CardType.DOUBLE);
 			this.directInsert(singleList, constants.CardType.SINGLE);
 
-			this.printCardSetList();
+			//this.printCardSetList();
 			/*this.printCardList(bombList, "bomb");
 			this.printCardList(connectThreeList, "connectThree");
 			this.printCardList(threeList, "three");

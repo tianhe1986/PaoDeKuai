@@ -21,16 +21,155 @@ module game{
 
 		public calcuCardSet(cardList:Array<Card>):CardSet
 		{
-			//TODO: 真的计算
 			let cardSet = new CardSet();
-			cardSet.setCardType(constants.CardType.SINGLE);
+			cardSet.setCardType(constants.CardType.ERROR);
+			
+			if (cardList.length == 0) { //未选中牌，接下来的都不用算了
+				return cardSet;
+			}
+
+			cardList.sort((a:Card, b:Card) => { //从小到大排序
+				return a.getCardId() - b.getCardId();
+			});
+
+			//默认是错误
+			let cardType = constants.CardType.ERROR;
+			let cardCount = cardList.length;
+			let connectNum = 1;
+			let point = cardList[0].getPoint();
+			if (cardCount == 1) { //一张牌，没啥说的
+				cardType = constants.CardType.SINGLE;
+			} else if (cardCount == 2) { //两张牌，只可能是对子
+				if (cardList[0].getPoint() == cardList[1].getPoint()) {
+					cardType = constants.CardType.DOUBLE;
+				}
+			} else if (cardCount == 4) { //姊妹对或炸弹
+				if (cardList[0].getPoint() == cardList[1].getPoint() && cardList[2].getPoint() == cardList[3].getPoint()) { //前两个与后两个都不相等的话，没搞头了
+					if (cardList[1].getPoint() == cardList[2].getPoint()) { //炸弹
+						cardType = constants.CardType.BOMB;
+					} else if (cardList[1].getPoint() + 1 == cardList[2].getPoint() && cardList[2].getPoint() != 15) { //姊妹对
+						cardType = constants.CardType.CONNECT_DOUBLE;
+						connectNum = 2;
+					}
+				}
+			} else if (cardCount == 5) { //三带二或顺子
+				let threePoints = this.findAllLastCard(cardList, 3);
+				if (threePoints.length) {
+					cardType = constants.CardType.THREE_TWO;
+					point = threePoints[0].getPoint();
+					this.sortWithPoint(cardList, point, point);
+				} else {
+					if (this.isStraight(cardList) && cardList[cardList.length - 1].getPoint() != 15) {
+						cardType = constants.CardType.STRAIGHT;
+						connectNum = cardList.length;
+					}
+				}
+			} else if (cardCount > 5){
+				while (true) { //只可能是连续三带二，顺子，或姊妹对
+					if (cardList.length % 5 == 0) { //三带二
+						let threePoints = this.findAllLastCard(cardList, 3);
+						if (threePoints.length == cardList.length / 5 && this.isStraight(threePoints)) {
+							cardType = constants.CardType.CONNECT_THREE;
+							point = threePoints[0].getPoint();
+							connectNum = cardList.length / 5;
+							this.sortWithPoint(cardList, point, point + connectNum - 1);
+							break;
+						}
+					}
+
+					if (cardList.length % 2 == 0) { //姊妹对
+						let twoPoints = this.findAllLastCard(cardList, 2);
+						if (twoPoints.length == cardList.length / 2 && this.isStraight(twoPoints) && twoPoints[twoPoints.length - 1].getPoint() != 15) {
+							cardType = constants.CardType.CONNECT_DOUBLE;
+							point = twoPoints[0].getPoint();
+							connectNum = cardList.length / 2;
+							this.sortWithPoint(cardList, point, point + connectNum - 1);
+							break;
+						}
+					}
+
+					if (this.isStraight(cardList) && cardList[cardList.length - 1].getPoint() != 15) {
+						cardType = constants.CardType.STRAIGHT;
+						connectNum = cardList.length;
+					}
+					break;
+				}
+			}
+			
+			cardSet.setCardType(cardType);
 			cardSet.setCardList(cardList);
-			cardSet.setPoint(3);
+			cardSet.setPoint(point);
+			cardSet.setConnectNum(connectNum);
 			return cardSet;
+		}
+
+		//对于所有存在samePointNum张点数相同的，把最后一张放入结果数组
+		public findAllLastCard(cardList:Array<Card>, samePointNum:number):Array<Card>
+		{
+			let result = [];
+			let nowNum = 1;
+			let nowPoint = 0;
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				if (cardList[i].getPoint() != nowPoint) { //不相等，重新开始计算
+					nowNum = 1;
+					nowPoint = cardList[i].getPoint();
+				} else {
+					nowNum++;
+					if (nowNum == samePointNum) {
+						result.push(cardList[i]);
+						nowNum = 1;
+						nowPoint = 0;
+					}
+				}
+			}
+
+			return result;
+		}
+
+		public isStraight(cardList:Array<Card>):boolean
+		{
+			for (let i = 0, len = cardList.length; i < len - 1; i++) {
+				if (cardList[i].getPoint() + 1 != cardList[i+1].getPoint()) {
+					return false;
+				}
+			}
+
+			return true;
+		}
+
+		public sortWithPoint(cardList:Array<Card>, minPoint:number, maxPoint:number):void
+		{
+			cardList.sort((a:Card, b:Card) => { //从小到大排序
+				let pointa = a.getPoint();
+				let pointb = b.getPoint();
+				let ainrange:boolean = (pointa >= minPoint && pointa <= maxPoint);
+				let binrange:boolean = (pointb >= minPoint && pointb <= maxPoint);
+				if (ainrange) {
+					if (binrange) {
+						return a.getCardId() - b.getCardId();
+					} else {
+						return -1;
+					}
+				} else {
+					if (binrange) {
+						return 1;
+					} else {
+						return a.getCardId() - b.getCardId();
+					}
+				}
+			});
 		}
 
 		public canOut(newCardSet:CardSet, nowCardSet:CardSet):boolean
 		{
+			if (newCardSet.getCardType() == constants.CardType.ERROR) { //错误牌型，不让出
+				return false;
+			}
+
+			if (nowCardSet.getCardType() == constants.CardType.INIT) { //首出
+				return true;
+			}
+
 			//牌型相同
 			if (newCardSet.getCardType() == nowCardSet.getCardType()) {
 				if (newCardSet.getConnectNum() == nowCardSet.getConnectNum() && newCardSet.getPoint() > nowCardSet.getPoint()) {
@@ -43,7 +182,7 @@ module game{
 				}
 			}
 
-			return true;
+			return false;
 		}
 
 		//找炸弹

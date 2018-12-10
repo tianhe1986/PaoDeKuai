@@ -58,6 +58,11 @@ module views{
 			this.cardOutButton.visible = false;
 		}
 
+		public hidePass():void
+		{
+			this.passButton.visible = false;
+		}
+
 		public showCardHandleButtons():void
 		{
 			this.cardOutButton.visible = true;
