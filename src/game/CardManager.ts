@@ -12,7 +12,9 @@ module game{
 		//牌型列表, 用于AI辅助计算
 		protected cardSetList:Array<CardSet> = [];
 
-		//TODO: 牌型set，便于快速查询
+		//牌型set，便于快速查询
+		protected cardSetMap:Object = {};
+
 		constructor(){
 
 		}
@@ -86,6 +88,7 @@ module game{
 		public clearCardSet():void
 		{
 			this.cardSetList = [];
+			this.cardSetMap = {};
 		}
 
 		public calcuCardSet():void
@@ -148,6 +151,10 @@ module game{
 					newCardSet.setConnectNum(needLen/5);
 					newCardSet.setMinPoint(minPoint);
 					this.cardSetList.push(newCardSet);
+					if (this.cardSetMap[constants.CardType.CONNECT_THREE] == undefined) {
+						this.cardSetMap[constants.CardType.CONNECT_THREE] = [];
+					}
+					this.cardSetMap[constants.CardType.CONNECT_THREE].push(newCardSet);
 					i++;
 				} else { //不够,直接拆了,TODO: 优化,考虑拆顺子,连对,和其他三张,第一版电脑当然是蠢的
 					let handleList = connectThreeList[i].slice();
@@ -189,6 +196,10 @@ module game{
 					newCardSet.setPoint(point);
 					newCardSet.setMinPoint(minPoint);
 					this.cardSetList.push(newCardSet);
+					if (this.cardSetMap[constants.CardType.THREE_TWO] == undefined) {
+						this.cardSetMap[constants.CardType.THREE_TWO] = [];
+					}
+					this.cardSetMap[constants.CardType.THREE_TWO].push(newCardSet);
 					i++;
 				} else { //不够,直接拆了,TODO: 优化,考虑拆顺子,连对
 					let handleList = threeList[i].slice();
@@ -206,6 +217,7 @@ module game{
 			this.directInsert(twoList, constants.CardType.DOUBLE);
 			this.directInsert(singleList, constants.CardType.SINGLE);
 
+			//按最小点数排序
 			this.cardSetList.sort((a:CardSet, b:CardSet) => {
 				return a.getMinPoint() - b.getMinPoint();
 			});
@@ -262,6 +274,10 @@ module game{
 					newCardSet.setConnectNum(handleList[i].length);
 				} 
 				this.cardSetList.push(newCardSet);
+				if (this.cardSetMap[cardType] == undefined) {
+					this.cardSetMap[cardType] = [];
+				}
+				this.cardSetMap[cardType].push(newCardSet);
 			}
 		}
 
@@ -332,7 +348,13 @@ module game{
 				this.calcuCardSet();
 				return cardSet;
 			} else {
-				//有相同类型的牌，则出
+				if ( ! CardLogic.GetInstance().hasLarge(this.cardList, superCardSet)) { //没有大的，只能跳过
+					let cardSet = new CardSet();
+					cardSet.setCardType(constants.CardType.PASSED);
+					return cardSet;
+				}
+
+				//有相同类型的牌，最好不过，不用拆
 				for (let i = 0; i < this.cardSetList.length; i++) {
 					if (this.cardSetList[i].getCardType() == superCardSet.getCardType()
 						&& this.cardSetList[i].getConnectNum() == superCardSet.getConnectNum()
@@ -345,12 +367,147 @@ module game{
 						return cardSet;
 					}
 				}
-				//TODO: 找最适合出的牌
-				//TODO: 统一判断有没有
+
+				//根据不同的牌，找最适合出的
+				let point = superCardSet.getPoint();
+				switch (superCardSet.getCardType()) {
+					case constants.CardType.SINGLE: //单牌:顺子里多的一张，一对，三带二里的一张，选最大的一张
+						if (this.cardSetMap[constants.CardType.STRAIGHT] != undefined) {
+							for (let i = 0; i < this.cardSetMap[constants.CardType.STRAIGHT].length; i++) {
+								if (this.cardSetMap[constants.CardType.STRAIGHT][i].getConnectNum() > 5 && this.cardSetMap[constants.CardType.STRAIGHT][i].getPoint() > point) {
+									let cardSet = this.buildSingleByCard(this.cardSetMap[constants.CardType.STRAIGHT][i].getCardList()[0]);
+									this.removeCardsBySet(cardSet);
+									this.calcuCardSet();
+									return cardSet;
+								}
+							}
+						}
+
+						if (this.cardSetMap[constants.CardType.DOUBLE] != undefined) {
+							for (let i = 0; i < this.cardSetMap[constants.CardType.DOUBLE].length; i++) {
+								if (this.cardSetMap[constants.CardType.DOUBLE][i].getPoint() > point) {
+									let cardSet = this.buildSingleByCard(this.cardSetMap[constants.CardType.DOUBLE][i].getCardList()[0]);
+									this.removeCardsBySet(cardSet);
+									this.calcuCardSet();
+									return cardSet;
+								}
+							}
+						}
+
+						if (this.cardSetMap[constants.CardType.THREE_TWO] != undefined) {
+							for (let i = 0; i < this.cardSetMap[constants.CardType.THREE_TWO].length; i++) {
+								if (this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[4].getPoint() > point) {
+									let cardSet = this.buildSingleByCard(this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[4]);
+									this.removeCardsBySet(cardSet);
+									this.calcuCardSet();
+									return cardSet;
+								}
+							}
+						}
+
+						let cardSet = this.buildSingleByCard(this.cardList[this.cardList.length - 1]);
+						this.removeCardsBySet(cardSet);
+						this.calcuCardSet();
+						return cardSet;
+
+						break;
+					case constants.CardType.DOUBLE: //一对:姊妹对，三带二，炸弹，选最小的一对
+						if (this.cardSetMap[constants.CardType.CONNECT_DOUBLE] != undefined) {
+							for (let i = 0; i < this.cardSetMap[constants.CardType.CONNECT_DOUBLE].length; i++) {
+								if (this.cardSetMap[constants.CardType.CONNECT_DOUBLE][i].getPoint() > point) {
+									let cardSet = this.buildDoubleByCard(this.cardSetMap[constants.CardType.CONNECT_DOUBLE][i].getCardList()[0], this.cardSetMap[constants.CardType.CONNECT_DOUBLE][i].getCardList()[1]);
+									this.removeCardsBySet(cardSet);
+									this.calcuCardSet();
+									return cardSet;
+								}
+							}
+						}
+
+						if (this.cardSetMap[constants.CardType.THREE_TWO] != undefined) {
+							for (let i = 0; i < this.cardSetMap[constants.CardType.THREE_TWO].length; i++) {
+								if (this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[3].getPoint() == this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[4].getPoint()
+									&& this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[3].getPoint() > point) {
+									let cardSet = this.buildDoubleByCard(this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[3], this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[4]);
+									this.removeCardsBySet(cardSet);
+									this.calcuCardSet();
+									return cardSet;
+								}
+							}
+
+							for (let i = 0; i < this.cardSetMap[constants.CardType.THREE_TWO].length; i++) {
+								if (this.cardSetMap[constants.CardType.THREE_TWO][i].getPoint() > point) {
+									let cardSet = this.buildDoubleByCard(this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[0], this.cardSetMap[constants.CardType.THREE_TWO][i].getCardList()[1]);
+									this.removeCardsBySet(cardSet);
+									this.calcuCardSet();
+									return cardSet;
+								}
+							}
+						}
+
+						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
+							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+
+						for (let i = 0, len = this.cardList.length; i < len - 1; i++) {
+							if (this.cardList[i].getPoint() > point && this.cardList[i].getPoint() == this.cardList[i+1].getPoint()) {
+								let cardSet = this.buildDoubleByCard(this.cardList[i], this.cardList[i+1]);
+								this.removeCardsBySet(cardSet);
+								this.calcuCardSet();
+								return cardSet;
+							}
+						}
+
+						break;
+					case constants.CardType.STRAIGHT: //一条龙:炸弹, 选最小的一条龙
+						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
+							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+
+						let newCardSet = CardLogic.GetInstance().findMinStraight(this.cardList, point, superCardSet.getConnectNum());
+						if (newCardSet) {
+							this.removeCardsBySet(newCardSet);
+							this.calcuCardSet();
+							return newCardSet;
+						}
+						break;
+					case constants.CardType.CONNECT_DOUBLE: //姊妹对:炸弹，选最小的姊妹对
+						break;
+					case constants.CardType.THREE_TWO: //三带二: 炸弹，最小的三带二
+						break;
+					case constants.CardType.CONNECT_THREE: //连续三带二：炸弹，最小的连续三带二
+						break;
+					case constants.CardType.BOMB: //还有比炸弹大的？那这有点问题
+						break;
+				}
+				
 				let cardSet = new CardSet();
 				cardSet.setCardType(constants.CardType.PASSED);
 				return cardSet;
-			}	
+			}
+		}
+
+		public buildSingleByCard(card:Card):CardSet
+		{
+			let cardSet = new CardSet();
+			cardSet.setCardType(constants.CardType.SINGLE);
+			cardSet.setPoint(card.getPoint());
+			cardSet.setCardList([card]);
+			return cardSet;
+		}
+
+		public buildDoubleByCard(card:Card, cardTwo:Card):CardSet
+		{
+			let cardSet = new CardSet();
+			cardSet.setCardType(constants.CardType.DOUBLE);
+			cardSet.setPoint(card.getPoint());
+			cardSet.setCardList([card, cardTwo]);
+			return cardSet;
 		}
 	}
 }

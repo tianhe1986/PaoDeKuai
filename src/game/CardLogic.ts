@@ -272,6 +272,43 @@ module game{
 			return false;
 		}
 
+		public findMinStraight(cardList:Array<Card>, point:number, count:number):CardSet
+		{
+			if (cardList.length) {
+				let nowList:Array<Card> = [];
+				let nowCount = 0;
+				let nowPoint = 0;
+				for (let i = 0, len = cardList.length; i < len; i++) {
+					let tempPoint = cardList[i].getPoint();
+					if (tempPoint <= point || tempPoint == 15) {
+						continue;
+					}
+					if (tempPoint == nowPoint) {
+						continue;
+					} else if (tempPoint == nowPoint + 1) {
+						nowCount++;
+						nowList.push(cardList[i]);
+						if (nowCount == count) {
+							let newCardSet = new CardSet();
+							newCardSet.setCardType(constants.CardType.STRAIGHT);
+							newCardSet.setCardList(nowList);
+							newCardSet.setPoint(nowList[0].getPoint());
+							newCardSet.setMinPoint(nowList[0].getPoint());
+							newCardSet.setConnectNum(count);
+							return newCardSet;
+						}
+						nowPoint = tempPoint;
+					} else {
+						nowCount = 1;
+						nowList = [cardList[i]];
+						nowPoint = tempPoint;
+					}
+				}
+			}
+
+			return null;
+		}
+
 		//找炸弹
 		public findAllBomb(cardList:Array<Card>):Array<Array<Card>>
 		{
