@@ -309,6 +309,136 @@ module game{
 			return null;
 		}
 
+		public findMinConnectTwo(cardList:Array<Card>, point:number, count:number):CardSet
+		{
+			if (cardList.length) {
+				let nowList:Array<Card> = [];
+				let nowCount = 0;
+				let nowPoint = 0;
+				let step = 1;
+				for (let i = 0, len = cardList.length; i < len; i++) {
+					let tempPoint = cardList[i].getPoint();
+					if (tempPoint <= point || tempPoint < nowPoint || tempPoint == 15) {
+						continue;
+					}
+					if (tempPoint == nowPoint) {
+						nowList.push(cardList[i]);
+						if (step == 2) {
+							nowPoint++;
+							nowCount++;
+							if (nowCount == count) {
+								let newCardSet = new CardSet();
+								newCardSet.setCardType(constants.CardType.CONNECT_DOUBLE);
+								newCardSet.setCardList(nowList);
+								newCardSet.setPoint(nowList[0].getPoint());
+								newCardSet.setMinPoint(nowList[0].getPoint());
+								newCardSet.setConnectNum(count);
+								return newCardSet;
+							}
+							step = 1;
+						} else {
+							step = 2;
+						}
+					} else {
+						nowCount = 0;
+						nowList = [cardList[i]];
+						nowPoint = tempPoint;
+						step = 2;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		public findMinThreeTwo(cardList:Array<Card>, point:number):CardSet
+		{
+			if (cardList.length) {
+				let nowList:Array<Card> = [];
+				for (let i = 0, len = cardList.length; i < len - 2; i++) {
+					let tempPoint = cardList[i].getPoint();
+					if (tempPoint <= point) {
+						continue;
+					}
+					if (cardList[i + 2].getPoint() == tempPoint) {
+						nowList = [cardList[i], cardList[i+1], cardList[i+2]];
+						let num = 0, j = 0;
+						while (num < 2 && j < len) {
+							if (cardList[j].getPoint() != tempPoint) {
+								nowList.push(cardList[j]);
+								num++;
+							}
+							j++;
+						}
+						if (num == 2) {
+							let newCardSet = new CardSet();
+							newCardSet.setCardType(constants.CardType.THREE_TWO);
+							newCardSet.setCardList(nowList);
+							newCardSet.setPoint(nowList[0].getPoint());
+							return newCardSet;
+						}
+						break;
+					}
+				}
+			}
+
+			return null;
+		}
+
+		public findMinConnectThree(cardList:Array<Card>, point:number, count:number):CardSet
+		{
+			if (cardList.length) {
+				let nowList:Array<Card> = [];
+				let nowCount = 0;
+				let nowPoint = 0;
+				let step = 1;
+				for (let i = 0, len = cardList.length; i < len; i++) {
+					let tempPoint = cardList[i].getPoint();
+					if (tempPoint <= point || tempPoint < nowPoint || tempPoint == 15) {
+						continue;
+					}
+					if (tempPoint == nowPoint) {
+						nowList.push(cardList[i]);
+						if (step == 3) {
+							nowPoint++;
+							nowCount++;
+							if (nowCount == count) {
+								//塞些其他东西进去
+								let num = 0, j = 0, needNum = count + count;
+								while (num < needNum && j < len) {
+									if (cardList[j].getPoint() <= point || cardList[j].getPoint() >= nowPoint) {
+										nowList.push(cardList[j]);
+										num++;
+									}
+									j++;
+								}
+								if (num == needNum) {
+									let newCardSet = new CardSet();
+									newCardSet.setCardType(constants.CardType.CONNECT_THREE);
+									newCardSet.setCardList(nowList);
+									newCardSet.setPoint(nowList[0].getPoint());
+									newCardSet.setConnectNum(count);
+									return newCardSet;
+								}
+								//这里没有,那之后也没有了
+								break;
+							}
+							step = 1;
+						} else {
+							step++;
+						}
+					} else {
+						nowCount = 0;
+						nowList = [cardList[i]];
+						nowPoint = tempPoint;
+						step = 2;
+					}
+				}
+			}
+
+			return null;
+		}
+
 		//找炸弹
 		public findAllBomb(cardList:Array<Card>):Array<Array<Card>>
 		{

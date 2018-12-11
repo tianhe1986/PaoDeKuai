@@ -477,15 +477,63 @@ module game{
 						}
 						break;
 					case constants.CardType.CONNECT_DOUBLE: //姊妹对:炸弹，选最小的姊妹对
+						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
+							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+
+						newCardSet = CardLogic.GetInstance().findMinConnectTwo(this.cardList, point, superCardSet.getConnectNum());
+						if (newCardSet) {
+							this.removeCardsBySet(newCardSet);
+							this.calcuCardSet();
+							return newCardSet;
+						}
+
 						break;
 					case constants.CardType.THREE_TWO: //三带二: 炸弹，最小的三带二
+						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
+							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+
+						newCardSet = CardLogic.GetInstance().findMinThreeTwo(this.cardList, point);
+						if (newCardSet) {
+							this.removeCardsBySet(newCardSet);
+							this.calcuCardSet();
+							return newCardSet;
+						}
+
 						break;
 					case constants.CardType.CONNECT_THREE: //连续三带二：炸弹，最小的连续三带二
+						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
+							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+
+						newCardSet = CardLogic.GetInstance().findMinConnectThree(this.cardList, point, superCardSet.getConnectNum());
+						if (newCardSet) {
+							this.removeCardsBySet(newCardSet);
+							this.calcuCardSet();
+							return newCardSet;
+						}
+
 						break;
-					case constants.CardType.BOMB: //还有比炸弹大的？那这有点问题
+					case constants.CardType.BOMB: //还有比炸弹大的？那这有点问题吧
 						break;
 				}
-				
+
+				console.log("find error");
+				console.log("now super card");
+				this.printCardSet(superCardSet);
+				console.log("hand card");
+				this.printCardList([this.cardList], "ALL");
+
 				let cardSet = new CardSet();
 				cardSet.setCardType(constants.CardType.PASSED);
 				return cardSet;
