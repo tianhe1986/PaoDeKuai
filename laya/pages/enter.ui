@@ -2,8 +2,8 @@
     "x":0,
     "type":"View",
     "selectedBox":1,
-    "selecteID":6,
-    "props":{"width":1334,"sceneColor":"#000000","height":750},
+    "selecteID":15,
+    "props":{"width":1334,"sceneColor":"#000000","height":750,"centerY":0.5,"centerX":0.5},
     "nodeParent":-1,
     "label":"View",
     "isOpen":true,
@@ -129,22 +129,35 @@
             "child":[
                 {
                     "x":30,
-                    "type":"Text",
-                    "props":{"y":0,"x":-79,"wordWrap":true,"width":617,"var":"ruleText","text":"地","leading":8,"height":593,"fontSize":18,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                    "type":"Panel",
+                    "props":{"y":0,"x":-79,"width":617,"vScrollBarSkin":"comp/vscroll.png","height":521},
                     "nodeParent":10,
-                    "label":"Text(ruleText)",
-                    "isDirectory":false,
+                    "label":"Panel",
+                    "isOpen":true,
+                    "isDirectory":true,
                     "isAniNode":true,
-                    "hasChild":false,
-                    "compId":6,
+                    "hasChild":true,
+                    "compId":15,
                     "child":[
-                        ],
-                    "$HIDDEN":false
+                        {
+                            "x":45,
+                            "type":"Text",
+                            "props":{"y":0,"x":0,"wordWrap":true,"width":617,"var":"ruleText","text":"地","leading":8,"fontSize":24,"font":"Microsoft YaHei","color":"#ffffff","align":"left"},
+                            "nodeParent":15,
+                            "label":"Text(ruleText)",
+                            "isDirectory":false,
+                            "isAniNode":true,
+                            "hasChild":false,
+                            "compId":6,
+                            "child":[
+                                ],
+                            "$HIDDEN":false
+                        }]
                 },
                 {
                     "x":30,
                     "type":"Button",
-                    "props":{"y":554,"x":175,"width":99,"var":"ruleClose","skin":"comp/button.png","labelSize":20,"labelFont":"Arial","label":"知道了","height":31},
+                    "props":{"y":554,"x":175,"width":110,"var":"ruleClose","skin":"comp/button.png","labelSize":24,"labelFont":"Arial","label":"知道了","height":45},
                     "nodeParent":10,
                     "label":"Button(ruleClose)",
                     "isDirectory":false,
