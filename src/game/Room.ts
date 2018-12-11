@@ -85,7 +85,7 @@ module game{
 		{
 			//创造三个用户，设置给三个座位
 			let userMy = {"userId":1, "score":100, "nickname":"莽夫" , "avatar":"avatar/b.png"};
-			let userLeft = {"userId":2, "score":100, "nickname":"梦称" , "avatar":"avatar/a.png"};
+			let userLeft = {"userId":2, "score":100, "nickname":"懵懂" , "avatar":"avatar/c.png"};
 			let userRight = {"userId":3, "score":100, "nickname":"性活" , "avatar":"avatar/a.png"};
 
 			let userManager = user.UserManager.GetInstance();
