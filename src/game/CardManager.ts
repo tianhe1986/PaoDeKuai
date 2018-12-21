@@ -219,7 +219,16 @@ module game{
 
 			//按最小点数排序
 			this.cardSetList.sort((a:CardSet, b:CardSet) => {
-				return a.getMinPoint() - b.getMinPoint();
+				let typea = a.getCardType();
+				let typeb = b.getCardType();
+
+				if (typea <= 2 && typeb <= 2) {
+					return a.getMinPoint() - b.getMinPoint();
+				}
+
+				let subResult = b.getCardType() - a.getCardType();
+				return subResult == 0 ? a.getMinPoint() - b.getMinPoint() : subResult;
+				//return a.getMinPoint() - b.getMinPoint();
 			});
 
 			//this.printCardSetList();
@@ -342,6 +351,16 @@ module game{
 		public calcuOutCardSet(superCardSet:CardSet):CardSet
 		{
 			if (superCardSet.getCardType() == constants.CardType.INIT) {
+				//这里没有考虑下家的牌情况,TODO: 考虑下家张数
+				for (let i = 0, len = this.cardSetList.length; i < len; i++) {
+					if (this.cardSetList[i].getCardType() != constants.CardType.BOMB) {
+						let cardSet = this.cardSetList[i];
+						this.removeCardsBySet(cardSet);
+						//重新计算牌型
+						this.calcuCardSet();
+						return cardSet;
+					}
+				}
 				let cardSet = this.cardSetList[0];
 				this.removeCardsBySet(cardSet);
 				//重新计算牌型
