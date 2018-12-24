@@ -424,23 +424,23 @@ module game{
 					return cardSet;
 				}
 
-				//有相同类型的牌，最好不过，不用拆,TODO,改成用MAP，选最大的出
-				for (let i = 0; i < this.cardSetList.length; i++) {
-					if (this.cardSetList[i].getCardType() == superCardSet.getCardType()
-						&& this.cardSetList[i].getConnectNum() == superCardSet.getConnectNum()
-						&& this.cardSetList[i].getPoint() > superCardSet.getPoint()
-					) {
-						let cardSet = this.cardSetList[i];
-						this.removeCardsBySet(cardSet);
-						//重新计算牌型
-						this.calcuCardSet();
-						return cardSet;
+				//有相同类型的牌，最好不过，不用拆
+				let superType = superCardSet.getCardType();
+				if (this.cardSetMap[superType] != undefined) {
+					for (let i = this.cardSetMap[superType].length - 1; i > 0; i--) {
+						if (this.cardSetMap[superType][i].getConnectNum() == superCardSet.getConnectNum() && this.cardSetMap[superType][i].getPoint() > superCardSet.getPoint()) {
+							let cardSet = this.cardSetMap[superType][i];
+							this.removeCardsBySet(cardSet);
+							//重新计算牌型
+							this.calcuCardSet();
+							return cardSet;
+						}
 					}
 				}
 
 				//根据不同的牌，找最适合出的
 				let point = superCardSet.getPoint();
-				switch (superCardSet.getCardType()) {
+				switch (superType) {
 					case constants.CardType.SINGLE: //单牌:顺子里多的一张，一对，三带二里的一张，选最大的一张
 						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
 							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
