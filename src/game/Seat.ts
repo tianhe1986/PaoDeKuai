@@ -92,9 +92,9 @@ module game{
 			this.cardManager.clearSelectCards();
 		}
 
-		public calcuOutCardSet(superCardSet:CardSet):CardSet
+		public calcuOutCardSet(superCardSet:CardSet, nextCardNum:number):CardSet
 		{
-			return this.cardManager.calcuOutCardSet(superCardSet);
+			return this.cardManager.calcuOutCardSet(superCardSet, nextCardNum);
 		}
 
 		public getRealCardNum():number

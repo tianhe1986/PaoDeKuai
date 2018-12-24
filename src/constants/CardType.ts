@@ -9,8 +9,8 @@ module constants{
 		public static SINGLE = 1; //单牌
 		public static DOUBLE = 2; //一对
 		public static CONNECT_DOUBLE = 3; //姊妹对，不能到二
-		public static STRAIGHT = 4; //顺子，不能顺到二
-		public static THREE_TWO = 5; //三带二
+		public static THREE_TWO = 4; //三带二
+		public static STRAIGHT = 5; //顺子，不能顺到二
 		public static THREE_ONE = 6; //三带一，仅最后出牌可出
 		public static CONNECT_THREE = 7; //连续三带二
 		public static BOMB = 8; //炸弹
@@ -24,9 +24,9 @@ module constants{
 			CardType.typeNameMap[0] = "错误牌型";
 			CardType.typeNameMap[1] = "单张";
 			CardType.typeNameMap[2] = "一对";
-			CardType.typeNameMap[3] = "姊妹对";
-			CardType.typeNameMap[4] = "一条龙";
-			CardType.typeNameMap[5] = "三带二";
+			CardType.typeNameMap[3] = "姊妹对";	
+			CardType.typeNameMap[4] = "三带二";
+			CardType.typeNameMap[5] = "一条龙";
 			CardType.typeNameMap[6] = "三带一";
 			CardType.typeNameMap[7] = "连续三带二";
 			CardType.typeNameMap[8] = "炸弹";

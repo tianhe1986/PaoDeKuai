@@ -226,7 +226,7 @@ module game{
 					return a.getMinPoint() - b.getMinPoint();
 				}
 
-				let subResult = b.getCardType() - a.getCardType();
+				let subResult = typeb - typea;
 				return subResult == 0 ? a.getMinPoint() - b.getMinPoint() : subResult;
 				//return a.getMinPoint() - b.getMinPoint();
 			});
@@ -348,10 +348,61 @@ module game{
 			this.setCardNum(this.cardList.length);
 		}
 
-		public calcuOutCardSet(superCardSet:CardSet):CardSet
+		public calcuOutCardSet(superCardSet:CardSet, nextCardNum:number):CardSet
 		{
 			if (superCardSet.getCardType() == constants.CardType.INIT) {
-				//这里没有考虑下家的牌情况,TODO: 考虑下家张数
+				//无论如何，如果可以一次性出完，直接出
+				if (this.cardSetList.length == 1) {
+					let cardSet = this.cardSetList[0];
+					this.removeCardsBySet(cardSet);
+					this.calcuCardSet();
+					return cardSet;
+				}
+
+				if (nextCardNum <= 3) {
+					//尽量先出张数大的
+					for (let i = 0, len = this.cardSetList.length; i < len; i++) {
+						if (this.cardSetList[i].getCardList().length > nextCardNum) {
+							let cardSet = this.cardSetList[i];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+					}
+
+					//如果下家是两张，一张一张的出
+					if (nextCardNum == 2) {
+						//有单张，出单张
+						for (let i = 0, len = this.cardSetList.length; i < len; i++) {
+							if (this.cardSetList[i].getCardType() == constants.CardType.SINGLE) {
+								let cardSet = this.cardSetList[i];
+								this.removeCardsBySet(cardSet);
+								this.calcuCardSet();
+								return cardSet;
+							}
+						}
+
+						//没有单张，选一个最小的拆了
+						for (let i = 0, len = this.cardSetList.length; i < len; i++) {
+							if (this.cardSetList[i].getCardType() == constants.CardType.DOUBLE) {
+								let cardSet = new CardSet();
+								cardSet.setCardType(constants.CardType.SINGLE);
+								let tempCard:Card = this.cardSetList[i].getCardList()[0];
+								cardSet.setCardList([tempCard]);
+								cardSet.setPoint(tempCard.getPoint());
+								this.removeCardsBySet(cardSet);
+								this.calcuCardSet();
+								return cardSet;
+							}
+						}
+					} else if (nextCardNum == 1) { //能够到这里，张数大的肯定已经出完了
+						let cardSet = this.cardSetList[this.cardSetList.length - 1];
+						this.removeCardsBySet(cardSet);
+						this.calcuCardSet();
+						return cardSet;
+					}
+				}
+
 				for (let i = 0, len = this.cardSetList.length; i < len; i++) {
 					if (this.cardSetList[i].getCardType() != constants.CardType.BOMB) {
 						let cardSet = this.cardSetList[i];
@@ -373,7 +424,7 @@ module game{
 					return cardSet;
 				}
 
-				//有相同类型的牌，最好不过，不用拆
+				//有相同类型的牌，最好不过，不用拆,TODO,改成用MAP，选最大的出
 				for (let i = 0; i < this.cardSetList.length; i++) {
 					if (this.cardSetList[i].getCardType() == superCardSet.getCardType()
 						&& this.cardSetList[i].getConnectNum() == superCardSet.getConnectNum()
@@ -391,6 +442,13 @@ module game{
 				let point = superCardSet.getPoint();
 				switch (superCardSet.getCardType()) {
 					case constants.CardType.SINGLE: //单牌:顺子里多的一张，一对，三带二里的一张，选最大的一张
+						if (this.cardSetMap[constants.CardType.BOMB] != undefined) {
+							let cardSet = this.cardSetMap[constants.CardType.BOMB][0];
+							this.removeCardsBySet(cardSet);
+							this.calcuCardSet();
+							return cardSet;
+						}
+
 						if (this.cardSetMap[constants.CardType.STRAIGHT] != undefined) {
 							for (let i = 0; i < this.cardSetMap[constants.CardType.STRAIGHT].length; i++) {
 								if (this.cardSetMap[constants.CardType.STRAIGHT][i].getConnectNum() > 5 && this.cardSetMap[constants.CardType.STRAIGHT][i].getPoint() > point) {

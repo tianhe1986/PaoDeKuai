@@ -177,7 +177,11 @@ module game{
 				let seat = Room.GetInstance().getSeat(seatId);
 				let superCardSet = Room.GetInstance().getNowSuperCardSet();
 
-				let resultCardSet = seat.calcuOutCardSet(superCardSet);
+				let nextSeatId:number = seatId + 1;
+				if (nextSeatId > 3) {
+					nextSeatId = 1;
+				}
+				let resultCardSet = seat.calcuOutCardSet(superCardSet, Room.GetInstance().getSeat(nextSeatId).getCardNum());
 
 				//发送出牌消息
 				this.sendOutCard(seatId, resultCardSet);
