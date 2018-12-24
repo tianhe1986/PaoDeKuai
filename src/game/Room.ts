@@ -253,7 +253,7 @@ module game{
 			GameLogic.GetInstance().sendOutCard(this.mySeatId, cardSet);
 		}
 
-		public processCardOut(seatId, cardSet:CardSet):void
+		public processCardOut(seatId:number, cardSet:CardSet):void
 		{
 			let handleSeat = this.getSeat(seatId);
 			//如果是自己，将cardSet中的牌移除掉

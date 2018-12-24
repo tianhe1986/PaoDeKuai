@@ -25,7 +25,7 @@ module message{
 
 		public readData():void
 		{
-			this.seatId = this.content["seatId"];
+			this.seatId = parseInt(this.content["seatId"]);
 			this.cardType = this.content["cardType"];
 			this.connectNum = this.content["connectNum"];
 			this.point = this.content["point"];
