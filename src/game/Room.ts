@@ -3,7 +3,11 @@
 */
 module game{
 	export class Room{
+		public static SCORE_KEY = "score_map";
 		protected isSingle:boolean = false;
+
+		protected userInfo:user.UserInfo = null;
+		protected scoreMap:Object = null;
 
 		protected mySeat:Seat = null;
 		protected leftSeat:Seat = null;
@@ -45,6 +49,10 @@ module game{
 			this.mySeat.setSeatView(roomView.mySeat);
 			this.leftSeat.setSeatView(roomView.leftSeat);
 			this.rightSeat.setSeatView(roomView.rightSeat);
+
+			this.userInfo = new user.UserInfo();
+			this.userInfo.setNickname("莽夫");
+			this.userInfo.setAvatar("avatar/b.png");
 		}
 
 		public getIsSingle():boolean
@@ -67,6 +75,67 @@ module game{
 			this.isGaming = val;
 		}
 
+		public login():void
+		{
+			game.PageManager.GetInstance().showLogin();
+
+			if (Laya.Browser.onMiniGame) {
+				let wx = Laya.Browser.window.wx;
+				
+				wx.login({
+					success: (res) => {
+						let code = res.code;
+						wx.getSetting({
+							success: (resSetting) => {
+								if (resSetting.authSetting["scope.userInfo"] == true)  { //已授权，直接获取
+									wx.getUserInfo({
+										withCredentials: true,
+										success: (res2) => {
+											this.userInfo.setNickname(res2.userInfo.nickName);
+											this.userInfo.setAvatar(res2.userInfo.avatarUrl);
+											this.showEnter();
+										}
+									});
+								} else { //未授权，创建微信登录按钮
+									let systemInfo = GameMain.GetInstance().getWxSystemInfo();
+									let button = wx.createUserInfoButton({
+										type: 'text',
+										text: '登录',
+										withCredentials: true,
+										style: {
+											left: systemInfo.windowWidth/2 - 70,
+											top: systemInfo.windowHeight/2 - 20,
+											width: 140,
+											height: 40,
+											lineHeight: 40,
+											backgroundColor: '#ffffff',
+											color: '#000000',
+											textAlign: 'center',
+											fontSize: 16,
+											borderRadius: 4
+										}
+									})
+									button.onTap((res2) => {
+										this.userInfo.setNickname(res2.userInfo.nickName);
+										this.userInfo.setAvatar(res2.userInfo.avatarUrl);
+										button.destroy();
+										this.showEnter();
+									})
+								}
+							}
+						});
+					}
+				});
+			} else { //否则，展示登录框
+				this.showEnter();
+			}
+		}
+
+		public showEnter():void
+		{
+			game.PageManager.GetInstance().showEnter();
+		}
+
 		public startSingle():void
 		{
 			this.setIsSingle(true);
@@ -81,12 +150,37 @@ module game{
 			GameLogic.GetInstance().startGame();
 		}
 
+		public getScoreMap():any
+		{
+			if (this.scoreMap == null) {
+				this.scoreMap = Laya.LocalStorage.getJSON(Room.SCORE_KEY);
+				if (this.scoreMap == null || this.scoreMap == '') {
+					this.scoreMap = {};
+					this.scoreMap[1] = 100;
+					this.scoreMap[2] = 100;
+					this.scoreMap[3] = 100;
+				}
+			}
+
+			return this.scoreMap;
+		}
+
+		public refreshAndSaveScore():void
+		{
+			this.scoreMap[this.mySeat.getUserInfo().getUserId()] = this.mySeat.getUserInfo().getScore();
+			this.scoreMap[this.leftSeat.getUserInfo().getUserId()] = this.leftSeat.getUserInfo().getScore();
+			this.scoreMap[this.rightSeat.getUserInfo().getUserId()] = this.rightSeat.getUserInfo().getScore();
+
+			Laya.LocalStorage.setJSON(Room.SCORE_KEY, this.scoreMap);
+		}
+
 		public mockSeat():void
 		{
 			//创造三个用户，设置给三个座位
-			let userMy = {"userId":1, "score":100, "nickname":"莽夫" , "avatar":"avatar/b.png"};
-			let userLeft = {"userId":2, "score":100, "nickname":"懵懂" , "avatar":"avatar/c.png"};
-			let userRight = {"userId":3, "score":100, "nickname":"性活" , "avatar":"avatar/a.png"};
+			let scoreMap = this.getScoreMap();
+			let userMy = {"userId":1, "score":scoreMap[1], "nickname":this.userInfo.getNickname(), "avatar":this.userInfo.getAvatar()};
+			let userLeft = {"userId":2, "score":scoreMap[2], "nickname":"懵懂" , "avatar":"avatar/c.png"};
+			let userRight = {"userId":3, "score":scoreMap[3], "nickname":"性活" , "avatar":"avatar/a.png"};
 
 			let userManager = user.UserManager.GetInstance();
 			userManager.processMyUserInfo(userMy);
@@ -291,6 +385,8 @@ module game{
 				resultList.push([userInfo.getNickname(), scoreMap[seatId]]);
 			}
 
+			this.refreshAndSaveScore();
+
 			//展示结果
 			PageManager.GetInstance().getRoomView().showResult(this.getSeat(winner).getUserInfo().getNickname(), resultList);
 		}
@@ -300,6 +396,9 @@ module game{
 			let handleSeat = this.getSeat(seatId);
 			handleSeat.getUserInfo().setScore(handleSeat.getUserInfo().getScore() + score);
 			handleSeat.refreshSeatInfo();
+
+			this.refreshAndSaveScore();
+			
 			if (seatId == this.mySeatId) {
 				PageManager.GetInstance().getRoomView().showPunish(Math.abs(score));
 			}

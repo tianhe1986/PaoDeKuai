@@ -24,6 +24,21 @@ module ui {
 }
 
 module ui {
+    export class loginUI extends View {
+
+        public static  uiView:any ={"type":"View","props":{"width":1334,"height":750,"centerY":0.5,"centerX":0.5},"child":[{"type":"Box","props":{"y":0,"x":0},"child":[{"type":"Rect","props":{"width":1334,"lineWidth":1,"height":750,"fillColor":"#56b8e7"}}]}]};
+        constructor(){ super()}
+        createChildren():void {
+        
+            super.createChildren();
+            this.createView(ui.loginUI.uiView);
+
+        }
+
+    }
+}
+
+module ui {
     export class roomUI extends View {
 		public background:Laya.Box;
 		public leftSeat:Laya.Box;

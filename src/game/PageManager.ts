@@ -6,6 +6,8 @@ module game{
 
 		//现在展示的视图
     	protected nowView:laya.ui.View = null;
+		//登录页
+		protected loginView:laya.ui.View = null;
 		//进入页
 		protected enterView:laya.ui.View = null;
 		//游戏页
@@ -60,6 +62,11 @@ module game{
 
 			this.showView(this[viewName]);
 			this.nowView = this[viewName];
+		}
+
+		public showLogin():void
+		{
+			this.baseShow("loginView", views.Login);
 		}
 
 		public showEnter():void

@@ -1,6 +1,7 @@
 // 程序入口
 class GameMain{
 	protected static instance:GameMain;
+	protected wxSystemInfo:any = null;
 
 	public static GetInstance():GameMain
 	{
@@ -15,6 +16,17 @@ class GameMain{
 	{
 
 	}
+
+	public getWxSystemInfo():any
+    {
+        if (Laya.Browser.onMiniGame) {
+            if (this.wxSystemInfo == null) {
+                this.wxSystemInfo = Laya.Browser.window.wx.getSystemInfoSync();
+            }
+        }
+
+        return this.wxSystemInfo;
+    }
 
 	public initStage():void
 	{
@@ -41,12 +53,12 @@ class GameMain{
 			{ url: "res/atlas/avatar.atlas", type:Laya.Loader.ATLAS},
 			{ url: "res/atlas/card.atlas", type:Laya.Loader.ATLAS},
 		];
-		Laya.loader.load(uiResArry, Laya.Handler.create(this, this.showIndex));
+		Laya.loader.load(uiResArry, Laya.Handler.create(this, this.login));
 	}
 
-	public showIndex():void
+	public login():void
 	{
-		game.PageManager.GetInstance().showEnter();
+		game.Room.GetInstance().login();
 	}
 
 	public start():void
