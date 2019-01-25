@@ -443,7 +443,7 @@ module game{
 				//有相同类型的牌，最好不过，不用拆
 				let superType = superCardSet.getCardType();
 				if (this.cardSetMap[superType] != undefined) {
-					for (let i = this.cardSetMap[superType].length - 1; i > 0; i--) {
+					for (let i = this.cardSetMap[superType].length - 1; i >= 0; i--) {
 						if (this.cardSetMap[superType][i].getConnectNum() == superCardSet.getConnectNum() && this.cardSetMap[superType][i].getPoint() > superCardSet.getPoint()) {
 							let cardSet = this.cardSetMap[superType][i];
 							this.removeCardsBySet(cardSet);

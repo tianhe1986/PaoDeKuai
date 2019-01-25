@@ -498,10 +498,10 @@ module game{
 			let result = [];
 			let i = 0;
 			while (i <= cardList.length - 4) {
-				if (cardList[i].getPoint() == cardList[i+3].getPoint() - 1) { //找到第一个姊妹对
+				if (cardList[i].getPoint() == cardList[i+3].getPoint() - 1 && cardList[i+3].getPoint() < 15) { //找到第一个姊妹对
 					//继续找后面连在一起的
 					let endIndex = i + 3;
-					while (endIndex + 2 < cardList.length && cardList[endIndex].getPoint() == cardList[endIndex+2].getPoint() - 1) {
+					while (endIndex + 2 < cardList.length && cardList[endIndex].getPoint() == cardList[endIndex+2].getPoint() - 1 && cardList[endIndex].getPoint() < 15) {
 						endIndex += 2;
 					}
 					result.push(cardList.splice(i, endIndex + 1 - i));
