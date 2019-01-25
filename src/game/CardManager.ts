@@ -343,6 +343,22 @@ module game{
 			}
 		}
 
+		public addCardsBySet(cardSet:CardSet):void
+		{
+			let cardList = cardSet.getCardList();
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				this.cardList.push(cardList[i]);
+			}
+		}
+
+		public backCardsBySet(cardSet:CardSet):void
+		{
+			this.addCardsBySet(cardSet);
+			this.refreshCardNum();
+			this.sortCardList();
+			this.refreshHandCardView();
+		}
+
 		public refreshCardNum():void
 		{
 			this.setCardNum(this.cardList.length);

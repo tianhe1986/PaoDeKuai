@@ -14,6 +14,7 @@ module views{
 		{
 			this.cardOutButton.on(Laya.Event.CLICK, this, this.onCardOut);
 			this.passButton.on(Laya.Event.CLICK, this, this.onPass);
+			this.remindButton.on(Laya.Event.CLICK, this, this.onRemind);
 		}
 
 		public initResult():void
@@ -48,6 +49,10 @@ module views{
 			game.Room.GetInstance().pass();
 		}
 
+		public onRemind():void
+		{
+			game.Room.GetInstance().remind();
+		}
 
 		public showTips(str:string):void
 		{
@@ -73,12 +78,14 @@ module views{
 		{
 			this.cardOutButton.visible = true;
 			this.passButton.visible = true;
+			this.remindButton.visible = true;
 		}
 
 		public hideCardHandleButtons():void
 		{
 			this.cardOutButton.visible = false;
 			this.passButton.visible = false;
+			this.remindButton.visible = false;
 		}
 
 		public onRestart():void

@@ -340,6 +340,39 @@ module game{
 			}
 		}
 
+		//提示
+		public remind():void
+		{
+			if (this.isTurn()) {
+				let seat = this.getMySeat();
+				//收起当前选中的牌
+				seat.clearSelectCards();
+				//计算手中的牌
+				seat.getCardManager().calcuCardSet();
+				//计算要出的牌
+				let nextSeatId:number = seat.getSeatId() + 1;
+				if (nextSeatId > 3) {
+					nextSeatId = 1;
+				}
+				let resultCardSet = seat.calcuOutCardSet(this.nowSuperCardSet, this.getSeat(nextSeatId).getCardNum());
+
+				seat.backCardsBySet(resultCardSet);
+				//如果打不起，直接不要
+				if (resultCardSet.getCardType() == constants.CardType.PASSED) {
+					this.pass();
+				} else { //否则，把推荐的牌取出
+					let cardList = resultCardSet.getCardList();
+					for (let i = 0, len = cardList.length; i < len; i++) {
+						cardList[i].setIsSelect(true);
+					}
+					this.calcuOutStatus();
+				}
+
+			} else { //没到，不允许出牌
+				
+			}
+		}
+
 		public pass():void
 		{
 			let cardSet = new CardSet();
@@ -398,7 +431,7 @@ module game{
 			handleSeat.refreshSeatInfo();
 
 			this.refreshAndSaveScore();
-			
+
 			if (seatId == this.mySeatId) {
 				PageManager.GetInstance().getRoomView().showPunish(Math.abs(score));
 			}

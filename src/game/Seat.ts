@@ -53,6 +53,13 @@ module game{
 			return this.cardManager;
 		}
 
+		public backCardsBySet(cardSet:CardSet):void
+		{
+			if (this.getSeatId() == game.Room.GetInstance().getMySeatId()) {
+				this.getCardManager().backCardsBySet(cardSet);
+			}
+		}
+
 		public refreshSeatInfo():void
 		{
 			let seatView = this.getSeatView();
