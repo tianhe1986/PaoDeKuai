@@ -221,7 +221,7 @@ module game{
 			let myUserInfo = userManager.getMyUserInfo();
 			for (let i = 0, len = seatArr.length; i < len; i++) {
 				if (seatArr[i]["userId"] == myUserInfo.getUserId()) {
-					let mySeatId = seatArr[i]["seatId"], leftSeatId = seatArr[(i + 2)%3]["seatId"], rightSeatId = seatArr[(i + 1)%3]["seatId"];
+					let mySeatId = parseInt(seatArr[i]["seatId"]), leftSeatId = parseInt(seatArr[(i + 2)%3]["seatId"]), rightSeatId = parseInt(seatArr[(i + 1)%3]["seatId"]);
 					let leftUserInfo = userManager.getUserInfo(seatArr[(i + 2)%3]["userId"]), rightUserInfo = userManager.getUserInfo(seatArr[(i + 1)%3]["userId"]);
 
 					this.setMySeatId(mySeatId);

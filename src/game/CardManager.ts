@@ -491,7 +491,19 @@ module game{
 				//有相同类型的牌，最好不过，不用拆
 				let superType = superCardSet.getCardType();
 				if (this.cardSetMap[superType] != undefined) {
-					for (let i = this.cardSetMap[superType].length - 1; i >= 0; i--) {
+					//如果此类型最大的不止一张且有，则打，争夺主动权,暂时先只考虑单张2
+					if (superType == constants.CardType.SINGLE) {
+						if (superCardSet.getPoint() < 15 && this.cardSetMap[superType][this.cardSetMap[superType].length - 1].getPoint() == 15) {
+							let cardSet = this.cardSetMap[superType][this.cardSetMap[superType].length - 1];
+							this.removeCardsBySet(cardSet);
+							//重新计算牌型
+							this.calcuCardSet();
+							return cardSet;
+						}
+					}
+
+					//否则，从小到大来，选第一个能压住的
+					for (let i = 0; i <= this.cardSetMap[superType].length - 1; i++) {
 						if (this.cardSetMap[superType][i].getConnectNum() == superCardSet.getConnectNum() && this.cardSetMap[superType][i].getPoint() > superCardSet.getPoint()) {
 							let cardSet = this.cardSetMap[superType][i];
 							//如果是3带2，特殊处理下，先把最小的牌带了
