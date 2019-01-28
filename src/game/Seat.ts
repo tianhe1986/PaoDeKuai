@@ -114,6 +114,21 @@ module game{
 			this.cardManager.removeCardsBySet(cardSet);
 		}
 
+		public recoverCardsBySet(cardSet:CardSet):void
+		{
+			this.cardManager.recoverCardsBySet(cardSet);
+		}
+
+		public moveToOutList(cardList:Array<Card>):void
+		{
+			this.cardManager.moveToOutList(cardList);
+		}
+
+		public recoverCardList(cardList:Array<Card>):void
+		{
+			this.cardManager.recoverCardList(cardList);
+		}
+
 		public refreshCardNum():void
 		{
 			this.cardManager.refreshCardNum();
@@ -124,8 +139,9 @@ module game{
 			this.cardManager.refreshHandCardView();
 		}
 
-		public clearOutCardView():void
+		public clearOutCard():void
 		{
+			this.cardManager.clearOutCardList();
 			let seatView = this.getSeatView();
 			(seatView.getChildByName("outCard") as Laya.Box).removeChildren();
 			(seatView.getChildByName("outCard") as Laya.Box).visible = false;

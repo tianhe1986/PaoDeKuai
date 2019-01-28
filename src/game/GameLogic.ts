@@ -182,6 +182,7 @@ module game{
 					nextSeatId = 1;
 				}
 				let resultCardSet = seat.calcuOutCardSet(superCardSet, Room.GetInstance().getSeat(nextSeatId).getCardNum());
+				seat.recoverCardList(resultCardSet.getCardList());
 
 				//发送出牌消息
 				this.sendOutCard(seatId, resultCardSet);
@@ -255,11 +256,14 @@ module game{
 					return true;
 				}
 				let cardList = [];
+				let cardManager = Room.GetInstance().getMySeat().getCardManager();
 				for (let cardId in this.mockSeatCardMap[seatId]) {
-					let newCard = new Card();
+					let newCard = cardManager.getAvailableCard();
 					newCard.setCardId(parseInt(cardId));
 					cardList.push(newCard);
 				}
+
+				cardManager.recoverCardList(cardList);
 				if (CardLogic.GetInstance().hasLarge(cardList, this.mockNowSuperCardSet)) {
 					//发送扣分消息
 					this.mockPunish(seatId, this.mockNowSuperCardSet.getCardList().length);

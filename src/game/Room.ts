@@ -281,9 +281,9 @@ module game{
 		{
 			let superCardSet:CardSet = this.getNowSuperCardSet();
 			if (superCardSet.getCardType() == constants.CardType.INIT) { //新出牌，清除之前所有的
-				this.mySeat.clearOutCardView();
-				this.leftSeat.clearOutCardView();
-				this.rightSeat.clearOutCardView();
+				this.mySeat.clearOutCard();
+				this.leftSeat.clearOutCard();
+				this.rightSeat.clearOutCard();
 			}
 
 			if (this.isTurn()) {
@@ -385,6 +385,7 @@ module game{
 			let handleSeat = this.getSeat(seatId);
 			//如果是自己，将cardSet中的牌移除掉
 			if (this.mySeatId == seatId) {
+				handleSeat.recoverCardsBySet(cardSet);
 				handleSeat.removeCardsBySet(cardSet);
 				handleSeat.refreshCardNum();
 				handleSeat.refreshHandCardView();
@@ -392,6 +393,7 @@ module game{
 			} else { //否则，只更新剩余牌数
 				handleSeat.setCardNum(handleSeat.getCardNum() - cardSet.getCardList().length);
 			}
+			handleSeat.moveToOutList(cardSet.getCardList());
 			
 			let nextSeatId:number = seatId + 1;
 			if (nextSeatId > 3) {
@@ -401,7 +403,7 @@ module game{
 			//关闭按钮展示
 			PageManager.GetInstance().getRoomView().hideCardHandleButtons();
 			//清除此座位下家的展示
-			this.getSeat(nextSeatId).clearOutCardView();
+			this.getSeat(nextSeatId).clearOutCard();
 			//展示此座位出的牌
 			handleSeat.showOutCard(cardSet, this.mySeatId == seatId);
 		}

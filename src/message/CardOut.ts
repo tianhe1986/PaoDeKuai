@@ -41,8 +41,9 @@ module message{
 		public getCardSet():game.CardSet
 		{
 			let cardList:Array<game.Card> = [];
+			let cardManager = game.Room.GetInstance().getMySeat().getCardManager();
 			for (let i = 0, len = this.cardIds.length; i < len; i++) {
-				let newCard = new game.Card();
+				let newCard = cardManager.getAvailableCard();
 				newCard.setCardId(this.cardIds[i]);
 				cardList.push(newCard);
 			}

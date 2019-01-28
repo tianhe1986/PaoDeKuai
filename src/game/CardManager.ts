@@ -15,6 +15,9 @@ module game{
 		//牌型set，便于快速查询
 		protected cardSetMap:Object = {};
 
+		//当前出牌列表，用于回收
+		protected outCardList:Array<Card> = [];
+
 		constructor(){
 
 		}
@@ -37,13 +40,20 @@ module game{
 		public getAvailableCard():Card
 		{
 			//TODO: 使用poolManager
-			return new Card();
+			//return new Card();
+			return Laya.Pool.getItemByClass("card", Card);
+		}
+
+		public recoverCard(card:Card):void
+		{
+			card.recover();
+			Laya.Pool.recover("card", card);
 		}
 
 		public refreshCard(cardIds:Array<number>, isSelf:boolean = false):void
 		{
 			for (let i = 0, len = this.cardList.length; i < len; i++) {
-				this.cardList[i].recover();
+				this.recoverCard(this.cardList[i]);
 			}
 			this.cardList = [];
 			this.cardSetList = [];
@@ -227,7 +237,7 @@ module game{
 				}
 
 				let subResult = typeb - typea;
-				return subResult == 0 ? a.getMinPoint() - b.getMinPoint() : subResult;
+				return subResult == 0 ? a.getPoint() - b.getPoint() : subResult;
 				//return a.getMinPoint() - b.getMinPoint();
 			});
 
@@ -335,12 +345,50 @@ module game{
 			}
 		}
 
+		public recoverByCardId(cardId:number):void
+		{
+			for (let i = 0, len = this.cardList.length; i < len; i++) {
+				if (this.cardList[i].getCardId() == cardId) {
+					this.recoverCard(this.cardList[i]);
+					break;
+				}
+			}
+		}
+
 		public removeCardsBySet(cardSet:CardSet):void
 		{
 			let cardList = cardSet.getCardList();
 			for (let i = 0, len = cardList.length; i < len; i++) {
 				this.removeCard(cardList[i].getCardId());
 			}
+		}
+
+		public recoverCardsBySet(cardSet:CardSet):void
+		{
+			let cardList = cardSet.getCardList();
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				this.recoverByCardId(cardList[i].getCardId());
+			}
+		}
+
+		public moveToOutList(cardList:Array<Card>):void
+		{
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				this.outCardList.push(cardList[i]);
+			}
+		}
+
+		public recoverCardList(cardList:Array<Card>):void
+		{
+			for (let i = 0, len = cardList.length; i < len; i++) {
+				this.recoverCard(cardList[i]);
+			}
+		}
+
+		public clearOutCardList():void
+		{
+			this.recoverCardList(this.outCardList);
+			this.outCardList = [];
 		}
 
 		public addCardsBySet(cardSet:CardSet):void
