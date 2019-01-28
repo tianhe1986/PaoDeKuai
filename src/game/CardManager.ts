@@ -446,6 +446,13 @@ module game{
 					for (let i = this.cardSetMap[superType].length - 1; i >= 0; i--) {
 						if (this.cardSetMap[superType][i].getConnectNum() == superCardSet.getConnectNum() && this.cardSetMap[superType][i].getPoint() > superCardSet.getPoint()) {
 							let cardSet = this.cardSetMap[superType][i];
+							//如果是3带2，特殊处理下，先把最小的牌带了
+							if (superType == constants.CardType.THREE_TWO && i != 0) {
+								let needCardList = cardSet.getCardList();
+								needCardList.splice(3, 2);
+								needCardList.push.apply(needCardList, this.cardSetMap[superType][0].getCardList().slice(3, 5));
+								cardSet.setCardList(needCardList);
+							}
 							this.removeCardsBySet(cardSet);
 							//重新计算牌型
 							this.calcuCardSet();
